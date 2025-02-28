@@ -1,5 +1,6 @@
 sed -i -e 's/book\//book-tmp/g' ./.gitignore
 rm -f .gitignore-e
+git add .gitignore
 # delete gh-pages
 git push origin `git subtree split --prefix book gh-pages`:gh-pages --force
 # Add book Commit
