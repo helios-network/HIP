@@ -301,7 +301,7 @@ fallback_glossary() {
 ## Glossary
 
 ⚠ **Warning**: Failed to fetch the latest glossary from the GitHub Wiki.
-Please check [the glossary online](https://github.com/helios-network/hIP/wiki/glossary).
+Please check [the glossary online](https://github.com/helios-network/HIP/wiki/glossary).
 
 EOL
 }

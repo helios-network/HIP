@@ -1,1 +1,6 @@
 .DS_Store
+book/
+HIP_repo/
+src/
+book.toml
+glossary_parts/
