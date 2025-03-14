@@ -1,4 +1,4 @@
-# MD-0: Formalize Helios Proposals
+# HD-0: Formalize Helios Proposals
 
 - **Description**: Provide formal structure for proposing non-trivial improvements to Helios.
 - **Authors**: [Jeremy Guyet](mailto:jguyet@helioschainlabs.org)
