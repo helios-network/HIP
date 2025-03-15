@@ -158,8 +158,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
-<blockquote>
+                        <blockquote>
 <p>Alphabetically ordered list of terms used in this repository.</p>
 </blockquote>
 <p><strong>Helios</strong>
@@ -192,14 +191,382 @@ An interface within the Helios Portal that provides insights into active and pas
 A fund managed by the Helios Foundation that collects slashed assets from misbehaving validators, which can be used for ecosystem incentives or liquidity provision.</p>
 <p><strong>Developer Grants</strong>
 Financial support provided to developers and projects building on the Helios blockchain, aimed at fostering innovation and enhancing the ecosystem’s capabilities.</p>
-<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
-<h1 id="welcome-to-the-helios-network-hip-book"><a class="header" href="#welcome-to-the-helios-network-hip-book">Welcome to the Helios Network HIP Book</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="welcome-to-the-helios-network-hip-book"><a class="header" href="#welcome-to-the-helios-network-hip-book">Welcome to the Helios Network HIP Book</a></h1>
 <h2 id="approved"><a class="header" href="#approved">Approved</a></h2>
+<h3 id="hips"><a class="header" href="#hips">HIPs</a></h3>
+<ul>
+<li><a href="Approved/main/HIP/hip-1/">HIP-1: Native On-chain Cron Scheduling (Chronos Module &amp; Precompile)</a></li>
+<li><a href="Approved/main/HIP/hip-2/">HIP-2: Delegation Boost for Enhanced Staking</a></li>
+</ul>
+<h3 id="hds"><a class="header" href="#hds">HDs</a></h3>
+<ul>
+<li><a href="Approved/main/HD/hd-1/">HD-1: Chronos Module &amp; Precompile</a></li>
+<li><a href="Approved/main/HD/hd-2/">HD-2: Delegation Boost for Enhanced Staking</a></li>
+</ul>
 <h2 id="review"><a class="header" href="#review">Review</a></h2>
-<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
-<h1 id="welcome-to-the-helios-network-hip-book-1"><a class="header" href="#welcome-to-the-helios-network-hip-book-1">Welcome to the Helios Network HIP Book</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="welcome-to-the-helios-network-hip-book-1"><a class="header" href="#welcome-to-the-helios-network-hip-book-1">Welcome to the Helios Network HIP Book</a></h1>
 <h2 id="approved-1"><a class="header" href="#approved-1">Approved</a></h2>
+<h3 id="hips-1"><a class="header" href="#hips-1">HIPs</a></h3>
+<ul>
+<li><a href="Approved/main/HIP/hip-1/">HIP-1: Native On-chain Cron Scheduling (Chronos Module &amp; Precompile)</a></li>
+<li><a href="Approved/main/HIP/hip-2/">HIP-2: Delegation Boost for Enhanced Staking</a></li>
+</ul>
+<h3 id="hds-1"><a class="header" href="#hds-1">HDs</a></h3>
+<ul>
+<li><a href="Approved/main/HD/hd-1/">HD-1: Chronos Module &amp; Precompile</a></li>
+<li><a href="Approved/main/HD/hd-2/">HD-2: Delegation Boost for Enhanced Staking</a></li>
+</ul>
 <h2 id="review-1"><a class="header" href="#review-1">Review</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hip-1-native-on-chain-cron-scheduling-chronos-module--precompile"><a class="header" href="#hip-1-native-on-chain-cron-scheduling-chronos-module--precompile">HIP-1: Native On-chain Cron Scheduling (Chronos Module &amp; Precompile)</a></h1>
+<ul>
+<li><strong>Description</strong>: Introduce a native cron scheduling module (<strong>Chronos</strong>) with a dedicated EVM precompile, allowing developers to schedule and automate periodic tasks directly on-chain within the Helios blockchain.</li>
+<li><strong>Motivation</strong>: Decentralized applications often rely on external cron scheduling services, introducing complexity, reliability concerns, and potential security risks. A native cron scheduling system provides a decentralized, secure, and developer-friendly solution.</li>
+</ul>
+<h2 id="abstract"><a class="header" href="#abstract">Abstract</a></h2>
+<p>The Chronos module offers native cron job scheduling directly integrated into Helios blockchain through a dedicated EVM precompile, allowing for automated periodic execution of smart contract methods. This simplifies the creation and management of scheduled tasks, significantly enhancing decentralized application development.</p>
+<h2 id="motivation"><a class="header" href="#motivation">Motivation</a></h2>
+<p>Blockchain applications require periodic automated execution of smart contract methods. The existing external solutions are neither fully decentralized nor optimal in terms of security and efficiency. A built-in cron scheduling mechanism ensures reliability, decentralization, and seamless integration.</p>
+<h2 id="specification"><a class="header" href="#specification">Specification</a></h2>
+<h3 id="key-features"><a class="header" href="#key-features">Key Features</a></h3>
+<ul>
+<li><strong>Native Integration:</strong> Implemented as an EVM-compatible precompile (<code>0x0000000000000000000000000000000000000830</code>).</li>
+<li><strong>Cron Job Management:</strong> Includes functionalities for creating, updating, and canceling cron jobs.</li>
+<li><strong>Unique Cron Addresses:</strong> Each cron job is assigned a unique blockchain address.</li>
+<li><strong>Gas Management:</strong> Users deposit funds upon cron creation, covering continuous gas consumption (set at 100 gas per block) and executions costs.</li>
+<li><strong>Cron Lifecycle Events:</strong> Emits blockchain events (<code>CronCreated</code>, <code>CronModified</code>, <code>CronCancelled</code>) for enhanced transparency.</li>
+<li><strong>Automatic Cancellation:</strong> Cron jobs are canceled automatically when their balance reaches zero or a critical error occurs during execution.</li>
+<li><strong>Multiple RPC Endpoints:</strong> RPC endpoints to take a look cron(s) (querying).</li>
+</ul>
+<h3 id="technical-implementation"><a class="header" href="#technical-implementation">Technical Implementation</a></h3>
+<ul>
+<li>ABI provided for easy integration with popular web3 libraries such as Ethers.js.</li>
+</ul>
+<h2 id="acceptance-criteria"><a class="header" href="#acceptance-criteria">Acceptance Criteria</a></h2>
+<ul>
+<li><input disabled="" type="checkbox" checked=""/>
+Cron tasks can be created, updated, and canceled effectively.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Each cron task has a unique blockchain address.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Funds deposited during cron creation accurately manage and consume gas (100 gas per block).</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Cron jobs automatically cancel upon depletion of funds or errors.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Lifecycle events (<code>CronCreated</code>, <code>CronModified</code>, <code>CronCancelled</code>) accurately emitted.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Comprehensive unit and integration tests covering all key functionalities and edge cases.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Detailed developer documentation provided, including setup instructions, RPC endpoints, API usage, limitations, and best practices.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Successful cron task scheduling, execution, and lifecycle management.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Automatic cancellation behavior clearly defined and verifiable.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Robust documentation provided in <a href="https://hub.helioschain.network/docs/innovate/advanced-use-cases/">Chronos</a>.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Community feedback and peer reviews adequately addressed.</li>
+</ul>
+<h2 id="changelog"><a class="header" href="#changelog">Changelog</a></h2>
+<ul>
+<li>2025-04-14: Initiate the HIP-1</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hip-2-delegation-boost-for-enhanced-staking"><a class="header" href="#hip-2-delegation-boost-for-enhanced-staking">HIP-2: Delegation Boost for Enhanced Staking</a></h1>
+<h2 id="feature-overview"><a class="header" href="#feature-overview">Feature Overview</a></h2>
+<p>A new <strong>Delegation Boost</strong> mechanism has been introduced in the staking module, allowing delegators to deposit additional tokens (in a specialized “boosted” pool) that increase their rewards proportionally. This addition brings several novel concepts, parameters, and message types to the Cosmos-based network.</p>
+<h2 id="motivation-1"><a class="header" href="#motivation-1">Motivation</a></h2>
+<p>Standard delegation involves delegators bonding tokens directly to validators, but previously had no way to “boost” or multiply their stake without simply adding more tokens in the same manner. <strong>Delegation Boost</strong> introduces a secondary stake pool that augments the staking power of a validator and potentially increases the delegator’s reward payout. This fosters deeper collaboration between delegators and validators and opens up new economic incentives in the network.</p>
+<h2 id="objectives"><a class="header" href="#objectives">Objectives</a></h2>
+<ul>
+<li><strong>Provide Flexible Staking Options:</strong> Enable a dedicated method to “boost” stake in addition to normal delegation, with potential for higher rewards.</li>
+<li><strong>Enforce Minimum Boost Requirements:</strong> Allow validators to specify a <code>min_delegation</code> as a threshold for boosted delegation.</li>
+<li><strong>Enable Enhanced Reward Calculations:</strong> Incorporate boosted delegations into reward distribution using a flexible multiplier defined by a network parameter (<code>BoostPercentage</code>).</li>
+<li><strong>Streamline Staking Flows:</strong> Maintain a clear distinction between regular staked tokens and boosted tokens, with dedicated messages for deposit and withdrawal.</li>
+</ul>
+<h2 id="key-features-1"><a class="header" href="#key-features-1">Key Features</a></h2>
+<ol>
+<li>
+<p><strong>Boosted Pool Account</strong></p>
+<ul>
+<li>A new module account (<code>boosted_tokens_pool</code>) holds tokens delegated as a boost.</li>
+<li>Ensures clear tracking and isolation of boosted tokens from regular staked tokens.</li>
+</ul>
+</li>
+<li>
+<p><strong>Boost Ratio &amp; Rewards Multiplier</strong></p>
+<ul>
+<li>The distribution module calculates a “boost ratio” for a validator by comparing its total boosted stake to its overall staked amount.</li>
+<li>A configurable <code>BoostPercentage</code> parameter governs how much of a multiplier this ratio adds to the rewards.</li>
+</ul>
+</li>
+<li>
+<p><strong>Validator-Based Settings</strong></p>
+<ul>
+<li><strong><code>min_delegation</code></strong>: A validator can specify the minimum boost required for delegators.</li>
+<li><strong><code>delegate_authorization</code></strong>: Determines whether anyone other than the validator can add a boosted delegation.</li>
+</ul>
+</li>
+<li>
+<p><strong>New Message Types</strong></p>
+<ul>
+<li><strong><code>DelegateBoost(...)</code></strong>: Delegates tokens to the boosted pool, tracked separately from normal staking.</li>
+<li><strong><code>UnDelegateBoost(...)</code></strong>: Withdraws boosted tokens, reducing the delegation’s effective multiplier.</li>
+</ul>
+</li>
+<li>
+<p><strong>Enhanced Store and Queries</strong></p>
+<ul>
+<li>New keys and indexing in the staking keeper track total boosts for each validator and each (delegator, validator) pair.</li>
+<li>Functions like <code>GetTotalBoostedDelegation</code> and <code>GetValidatorDelegationsBoost</code> enable easier lookups of boosted stakes.</li>
+</ul>
+</li>
+<li>
+<p><strong>Genesis &amp; Parameter Integration</strong></p>
+<ul>
+<li>The chain’s genesis process now initializes the <code>boosted_tokens_pool</code> and parameters such as <code>BoostPercentage</code>.</li>
+<li>Operators can manage <code>BoostPercentage</code>, <code>min_delegation</code>, and <code>delegate_authorization</code> via governance or direct configuration.</li>
+</ul>
+</li>
+</ol>
+<h2 id="technical-implementation-1"><a class="header" href="#technical-implementation-1">Technical Implementation</a></h2>
+<ul>
+<li>
+<p><strong>Extended Staking Keeper Methods:</strong></p>
+<ul>
+<li><code>DelegateBoost</code>, <code>UnDelegateBoost</code>, <code>SetDelegationBoost</code>, and <code>GetDelegationBoost</code> orchestrate storing boosted tokens and updating delegated amounts.</li>
+<li>The keeper enforces <code>min_delegation</code> and <code>delegate_authorization</code> when delegations occur.</li>
+</ul>
+</li>
+<li>
+<p><strong>Modified Reward Distribution Logic:</strong></p>
+<ul>
+<li>Updated distribution code fetches a validator’s <code>boostedTotal</code> tokens, calculates a <code>boostRatio</code>, and multiplies the base rewards by <code>1 + (BoostPercentage * boostRatio)</code> (capped at a maximum of 1:1 ratio for the boost portion).</li>
+</ul>
+</li>
+<li>
+<p><strong>New Proto Definitions:</strong></p>
+<ul>
+<li><code>MsgCreateValidator</code> and <code>MsgEditValidator</code> now include <code>min_delegation</code> and <code>delegate_authorization</code>.</li>
+<li>Messages for delegating/undelegating boosts are defined and handle moving tokens to and from <code>boosted_tokens_pool</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Module Accounts &amp; Balances:</strong></p>
+<ul>
+<li>All boosted tokens are transferred to the <code>boosted_tokens_pool</code> account via the Cosmos SDK’s Bank module.</li>
+<li>On undelegation, tokens are properly returned to delegators.</li>
+</ul>
+</li>
+</ul>
+<h2 id="acceptance-criteria-1"><a class="header" href="#acceptance-criteria-1">Acceptance Criteria</a></h2>
+<ul>
+<li><input disabled="" type="checkbox" checked=""/>
+<strong>Boosted Delegations:</strong> Delegators can deposit additional tokens and have them reflected in higher potential rewards.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+<strong>Minimal Impact on Existing Delegations:</strong> Regular staking remains unaffected; boosted delegation is purely additive.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+<strong>Validator Constraints:</strong> Validators can enforce a minimum boost requirement, and can restrict who is allowed to boost.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+<strong>Reward Calculation Updates:</strong> The distribution module correctly calculates rewards with a <code>boostRatio</code> multiplier, respecting the <code>BoostPercentage</code> parameter.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+<strong>Secure Fund Handling:</strong> Tokens are transferred securely to the <code>boosted_tokens_pool</code> and only returned on undelegation.</li>
+<li><input disabled="" type="checkbox"/>
+<strong>Documentation &amp; User Guide:</strong> Provide detailed instructions for validators and delegators on enabling, delegating, and withdrawing boosts.</li>
+</ul>
+<h2 id="documentation"><a class="header" href="#documentation">Documentation</a></h2>
+<ul>
+<li><strong>Developer References:</strong> Covers all new messages (<code>DelegateBoost</code>, <code>UnDelegateBoost</code>), relevant keeper methods, and store keys.</li>
+<li><strong>Validator Setup:</strong> Explains configuring <code>min_delegation</code> and <code>delegate_authorization</code>.</li>
+<li><strong>Reward Mechanics:</strong> Describes the boost ratio calculation, capped multiplier, and the distribution flow for boosted rewards.</li>
+<li><strong>Governance:</strong> Outlines how parameters like <code>BoostPercentage</code> may be updated through governance proposals.</li>
+</ul>
+<p>By integrating <strong>Delegation Boost</strong>, Helios enhances the overall staking experience, introducing novel opportunities for delegators and validators alike to optimize their on-chain economic strategies while maintaining network security and stability.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="welcome-to-the-helios-network-hip-book-2"><a class="header" href="#welcome-to-the-helios-network-hip-book-2">Welcome to the Helios Network HIP Book</a></h1>
+<h2 id="approved-2"><a class="header" href="#approved-2">Approved</a></h2>
+<h3 id="hips-2"><a class="header" href="#hips-2">HIPs</a></h3>
+<ul>
+<li><a href="Approved/main/HIP/hip-1/">HIP-1: Native On-chain Cron Scheduling (Chronos Module &amp; Precompile)</a></li>
+<li><a href="Approved/main/HIP/hip-2/">HIP-2: Delegation Boost for Enhanced Staking</a></li>
+</ul>
+<h3 id="hds-2"><a class="header" href="#hds-2">HDs</a></h3>
+<ul>
+<li><a href="Approved/main/HD/hd-1/">HD-1: Chronos Module &amp; Precompile</a></li>
+<li><a href="Approved/main/HD/hd-2/">HD-2: Delegation Boost for Enhanced Staking</a></li>
+</ul>
+<h2 id="review-2"><a class="header" href="#review-2">Review</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hd-1-chronos-module--precompile"><a class="header" href="#hd-1-chronos-module--precompile">HD-1: Chronos Module &amp; Precompile</a></h1>
+<h2 id="feature-overview-1"><a class="header" href="#feature-overview-1">Feature Overview</a></h2>
+<p>Implement a native cron scheduling module (<strong>Chronos</strong>) along with a dedicated EVM precompile, enabling developers to schedule and automate periodic tasks directly on-chain.</p>
+<h2 id="motivation-2"><a class="header" href="#motivation-2">Motivation</a></h2>
+<p>Blockchain-based applications often require periodic execution of smart contract methods. Currently, developers depend on off-chain solutions, introducing complexity and reliability concerns. A native, blockchain-integrated cron service simplifies automation and enhances the robustness and efficiency of decentralized applications.</p>
+<h2 id="objectives-1"><a class="header" href="#objectives-1">Objectives</a></h2>
+<ul>
+<li>Provide an intuitive, efficient, and secure way to schedule periodic smart contract interactions.</li>
+<li>Reduce the reliance on external cron services or centralized schedulers.</li>
+<li>Enhance developer experience through seamless integration with smart contracts.</li>
+</ul>
+<h2 id="key-features-2"><a class="header" href="#key-features-2">Key Features</a></h2>
+<ul>
+<li><strong>Native Integration:</strong> Directly integrated into Helios blockchain as a precompile.</li>
+<li><strong>Easy Scheduling:</strong> Simple API to schedule function calls with specified frequency, expiration, gas limits, and maximum gas price.</li>
+<li><strong>Reliability:</strong> Guaranteed execution or clear state indication of failed executions.</li>
+<li><strong>Security:</strong> Execution isolated within blockchain’s native security context.</li>
+<li><strong>Unique Cron Addresses:</strong> Each cron job has a unique blockchain address.</li>
+<li><strong>Gas Management:</strong> Upon cron creation, funds are deposited to cover gas consumption (100 gas per block to keep the cron active).</li>
+<li><strong>RPC Endpoints:</strong> Multiple RPC endpoints must be created to support cron interactions and management.</li>
+<li><strong>Cron Cancellation Conditions:</strong> Crons are automatically canceled when their balance reaches zero or an execution failure occurs. Remaining funds (if any) at cancellation are returned to the owner, and an event is emitted indicating cancellation.</li>
+</ul>
+<h2 id="technical-implementation-2"><a class="header" href="#technical-implementation-2">Technical Implementation</a></h2>
+<ul>
+<li>Dedicated EVM-compatible precompile address: <code>0x0000000000000000000000000000000000000830</code>.</li>
+<li>ABI included for straightforward integration with front-end libraries such as Ethers.js and Web3.</li>
+<li>Comprehensive unit and integration testing included.</li>
+</ul>
+<h2 id="acceptance-criteria-2"><a class="header" href="#acceptance-criteria-2">Acceptance Criteria</a></h2>
+<ul>
+<li><input disabled="" type="checkbox" checked=""/>
+Ability to schedule and reliably execute cron tasks.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Ability to update and cancel existing cron tasks.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Cron tasks have unique blockchain addresses.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Funds deposited at cron creation are properly managed and consumed at the rate of 100 gas per block.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Cron tasks are automatically canceled and cleaned up when balance reaches zero or upon execution failure.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Events (<code>CronCreated</code>, <code>CronModified</code>, <code>CronCancelled</code>) emitted accurately reflecting cron job lifecycle.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Respect of gas limits and consumption rules as defined.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Clear and complete developer documentation.</li>
+</ul>
+<h2 id="documentation-1"><a class="header" href="#documentation-1">Documentation</a></h2>
+<ul>
+<li>Detailed developer documentation available under <a href="https://hub.helioschain.network/docs/innovate/advanced-use-cases/">Chronos</a>.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hd-2-delegation-boost-for-enhanced-staking"><a class="header" href="#hd-2-delegation-boost-for-enhanced-staking">HD-2: Delegation Boost for Enhanced Staking</a></h1>
+<h2 id="feature-overview-2"><a class="header" href="#feature-overview-2">Feature Overview</a></h2>
+<p>A new <strong>Delegation Boost</strong> mechanism has been introduced in the staking module, allowing delegators to deposit additional tokens (in a specialized “boosted” pool) that increase their rewards proportionally. This addition brings several novel concepts, parameters, and message types to the Cosmos-based network.</p>
+<h2 id="motivation-3"><a class="header" href="#motivation-3">Motivation</a></h2>
+<p>Standard delegation involves delegators bonding tokens directly to validators, but previously had no way to “boost” or multiply their stake without simply adding more tokens in the same manner. <strong>Delegation Boost</strong> introduces a secondary stake pool that augments the staking power of a validator and potentially increases the delegator’s reward payout. This fosters deeper collaboration between delegators and validators and opens up new economic incentives in the network.</p>
+<h2 id="objectives-2"><a class="header" href="#objectives-2">Objectives</a></h2>
+<ul>
+<li><strong>Provide Flexible Staking Options:</strong> Enable a dedicated method to “boost” stake in addition to normal delegation, with potential for higher rewards.</li>
+<li><strong>Enforce Minimum Boost Requirements:</strong> Allow validators to specify a <code>min_delegation</code> as a threshold for boosted delegation.</li>
+<li><strong>Enable Enhanced Reward Calculations:</strong> Incorporate boosted delegations into reward distribution using a flexible multiplier defined by a network parameter (<code>BoostPercentage</code>).</li>
+<li><strong>Streamline Staking Flows:</strong> Maintain a clear distinction between regular staked tokens and boosted tokens, with dedicated messages for deposit and withdrawal.</li>
+</ul>
+<h2 id="key-features-3"><a class="header" href="#key-features-3">Key Features</a></h2>
+<ol>
+<li>
+<p><strong>Boosted Pool Account</strong></p>
+<ul>
+<li>A new module account (<code>boosted_tokens_pool</code>) holds tokens delegated as a boost.</li>
+<li>Ensures clear tracking and isolation of boosted tokens from regular staked tokens.</li>
+</ul>
+</li>
+<li>
+<p><strong>Boost Ratio &amp; Rewards Multiplier</strong></p>
+<ul>
+<li>The distribution module calculates a “boost ratio” for a validator by comparing its total boosted stake to its overall staked amount.</li>
+<li>A configurable <code>BoostPercentage</code> parameter governs how much of a multiplier this ratio adds to the rewards.</li>
+</ul>
+</li>
+<li>
+<p><strong>Validator-Based Settings</strong></p>
+<ul>
+<li><strong><code>min_delegation</code></strong>: A validator can specify the minimum boost required for delegators.</li>
+<li><strong><code>delegate_authorization</code></strong>: Determines whether anyone other than the validator can add a boosted delegation.</li>
+</ul>
+</li>
+<li>
+<p><strong>New Message Types</strong></p>
+<ul>
+<li><strong><code>DelegateBoost(...)</code></strong>: Delegates tokens to the boosted pool, tracked separately from normal staking.</li>
+<li><strong><code>UnDelegateBoost(...)</code></strong>: Withdraws boosted tokens, reducing the delegation’s effective multiplier.</li>
+</ul>
+</li>
+<li>
+<p><strong>Enhanced Store and Queries</strong></p>
+<ul>
+<li>New keys and indexing in the staking keeper track total boosts for each validator and each (delegator, validator) pair.</li>
+<li>Functions like <code>GetTotalBoostedDelegation</code> and <code>GetValidatorDelegationsBoost</code> enable easier lookups of boosted stakes.</li>
+</ul>
+</li>
+<li>
+<p><strong>Genesis &amp; Parameter Integration</strong></p>
+<ul>
+<li>The chain’s genesis process now initializes the <code>boosted_tokens_pool</code> and parameters such as <code>BoostPercentage</code>.</li>
+<li>Operators can manage <code>BoostPercentage</code>, <code>min_delegation</code>, and <code>delegate_authorization</code> via governance or direct configuration.</li>
+</ul>
+</li>
+</ol>
+<h2 id="technical-implementation-3"><a class="header" href="#technical-implementation-3">Technical Implementation</a></h2>
+<ul>
+<li>
+<p><strong>Extended Staking Keeper Methods:</strong></p>
+<ul>
+<li><code>DelegateBoost</code>, <code>UnDelegateBoost</code>, <code>SetDelegationBoost</code>, and <code>GetDelegationBoost</code> orchestrate storing boosted tokens and updating delegated amounts.</li>
+<li>The keeper enforces <code>min_delegation</code> and <code>delegate_authorization</code> when delegations occur.</li>
+</ul>
+</li>
+<li>
+<p><strong>Modified Reward Distribution Logic:</strong></p>
+<ul>
+<li>Updated distribution code fetches a validator’s <code>boostedTotal</code> tokens, calculates a <code>boostRatio</code>, and multiplies the base rewards by <code>1 + (BoostPercentage * boostRatio)</code> (capped at a maximum of 1:1 ratio for the boost portion).</li>
+</ul>
+</li>
+<li>
+<p><strong>New Proto Definitions:</strong></p>
+<ul>
+<li><code>MsgCreateValidator</code> and <code>MsgEditValidator</code> now include <code>min_delegation</code> and <code>delegate_authorization</code>.</li>
+<li>Messages for delegating/undelegating boosts are defined and handle moving tokens to and from <code>boosted_tokens_pool</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Module Accounts &amp; Balances:</strong></p>
+<ul>
+<li>All boosted tokens are transferred to the <code>boosted_tokens_pool</code> account via the Cosmos SDK’s Bank module.</li>
+<li>On undelegation, tokens are properly returned to delegators.</li>
+</ul>
+</li>
+</ul>
+<h2 id="acceptance-criteria-3"><a class="header" href="#acceptance-criteria-3">Acceptance Criteria</a></h2>
+<ul>
+<li><input disabled="" type="checkbox" checked=""/>
+<strong>Boosted Delegations:</strong> Delegators can deposit additional tokens and have them reflected in higher potential rewards.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+<strong>Minimal Impact on Existing Delegations:</strong> Regular staking remains unaffected; boosted delegation is purely additive.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+<strong>Validator Constraints:</strong> Validators can enforce a minimum boost requirement, and can restrict who is allowed to boost.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+<strong>Reward Calculation Updates:</strong> The distribution module correctly calculates rewards with a <code>boostRatio</code> multiplier, respecting the <code>BoostPercentage</code> parameter.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+<strong>Secure Fund Handling:</strong> Tokens are transferred securely to the <code>boosted_tokens_pool</code> and only returned on undelegation.</li>
+<li><input disabled="" type="checkbox"/>
+<strong>Documentation &amp; User Guide:</strong> Provide detailed instructions for validators and delegators on enabling, delegating, and withdrawing boosts.</li>
+</ul>
+<h2 id="documentation-2"><a class="header" href="#documentation-2">Documentation</a></h2>
+<ul>
+<li><strong>Developer References:</strong> Covers all new messages (<code>DelegateBoost</code>, <code>UnDelegateBoost</code>), relevant keeper methods, and store keys.</li>
+<li><strong>Validator Setup:</strong> Explains configuring <code>min_delegation</code> and <code>delegate_authorization</code>.</li>
+<li><strong>Reward Mechanics:</strong> Describes the boost ratio calculation, capped multiplier, and the distribution flow for boosted rewards.</li>
+<li><strong>Governance:</strong> Outlines how parameters like <code>BoostPercentage</code> may be updated through governance proposals.</li>
+</ul>
+<p>By integrating <strong>Delegation Boost</strong>, Helios enhances the overall staking experience, introducing novel opportunities for delegators and validators alike to optimize their on-chain economic strategies while maintaining network security and stability.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="welcome-to-the-helios-network-hip-book-3"><a class="header" href="#welcome-to-the-helios-network-hip-book-3">Welcome to the Helios Network HIP Book</a></h1>
+<h2 id="approved-3"><a class="header" href="#approved-3">Approved</a></h2>
+<h3 id="hips-3"><a class="header" href="#hips-3">HIPs</a></h3>
+<ul>
+<li><a href="Approved/main/HIP/hip-1/">HIP-1: Native On-chain Cron Scheduling (Chronos Module &amp; Precompile)</a></li>
+<li><a href="Approved/main/HIP/hip-2/">HIP-2: Delegation Boost for Enhanced Staking</a></li>
+</ul>
+<h3 id="hds-3"><a class="header" href="#hds-3">HDs</a></h3>
+<ul>
+<li><a href="Approved/main/HD/hd-1/">HD-1: Chronos Module &amp; Precompile</a></li>
+<li><a href="Approved/main/HD/hd-2/">HD-2: Delegation Boost for Enhanced Staking</a></li>
+</ul>
+<h2 id="review-3"><a class="header" href="#review-3">Review</a></h2>
 
                     </main>
 

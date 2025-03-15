@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Glossary - HIP</title>
+        <title>HIP-1: Native On-chain Cron Scheduling (Chronos Module &amp; Precompile) - HIP</title>
 
 
         <!-- Custom HTML head -->
@@ -12,21 +12,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../../favicon.png">
+        <link rel="stylesheet" href="../../../../css/variables.css">
+        <link rel="stylesheet" href="../../../../css/general.css">
+        <link rel="stylesheet" href="../../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" href="../../../../highlight.css">
+        <link rel="stylesheet" href="../../../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
@@ -35,11 +35,11 @@
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "";
+            var path_to_root = "../../../../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="../../../../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -91,7 +91,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -125,7 +125,7 @@
                     <h1 class="menu-title">HIP</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://github.com/helios-network/HIP" title="Git repository" aria-label="Git repository">
@@ -157,46 +157,69 @@
 
                 <div id="content" class="content">
                     <main>
-                        <blockquote>
-<p>Alphabetically ordered list of terms used in this repository.</p>
-</blockquote>
-<p><strong>Helios</strong>
-A next-generation blockchain designed for interchain automation, AI-powered smart contracts, and decentralized governance, enabling seamless interactions across multiple ecosystems.</p>
-<p><strong>Governance</strong>
-The process by which stakeholders and validators influence network parameters, including asset management, protocol updates, and economic incentives through proposals and voting.</p>
-<p><strong>Validator</strong>
-A node that participates in the Helios network by securing the blockchain, validating transactions, and influencing governance decisions based on their stake and reputation.</p>
-<p><strong>Staking</strong>
-The process of locking assets in the Helios network to support operations such as transaction validation and governance, while earning rewards in return.</p>
-<p><strong>Interchain Proof of Stake and Reputation (I-PoSR)</strong>
-A hybrid consensus mechanism that combines staking across multiple chains with a reputation-based model, enhancing security and decentralization.</p>
-<p><strong>Hyperion Modules</strong>
-Modular components that facilitate cross-chain interactions, enabling secure asset transfers and decentralized oracle functionalities within the Helios ecosystem.</p>
-<p><strong>Asset Weight</strong>
-The relative importance of an asset in the staking consensus, which can be adjusted through governance proposals to influence staking incentives and rewards.</p>
-<p><strong>Proposal</strong>
-A formal suggestion submitted by community members or validators to modify network parameters, add or remove assets, or implement upgrades, which is then voted on by stakeholders.</p>
-<p><strong>Community Governance</strong>
-A system that empowers Helios stakeholders to participate in decision-making processes, ensuring that the network evolves according to the collective interests of its users.</p>
-<p><strong>Decentralized Applications (dApps)</strong>
-Applications built on the Helios blockchain that leverage its features for various use cases, including finance, gaming, and automation, while ensuring user control and security.</p>
-<p><strong>Cross-Chain Transactions</strong>
-Transactions that occur between different blockchain networks, facilitated by Helios interoperability features, allowing seamless asset movement and interaction.</p>
-<p><strong>Reputation Score</strong>
-A metric that reflects a validator’s performance and reliability, influencing their voting power and decision-making authority within the governance framework.</p>
-<p><strong>Helios Portal</strong>
-An interface within the Helios Portal that provides insights into active and past governance proposals, allowing users to track decisions and participate in the governance process.</p>
-<p><strong>Treasury</strong>
-A fund managed by the Helios Foundation that collects slashed assets from misbehaving validators, which can be used for ecosystem incentives or liquidity provision.</p>
-<p><strong>Developer Grants</strong>
-Financial support provided to developers and projects building on the Helios blockchain, aimed at fostering innovation and enhancing the ecosystem’s capabilities.</p>
+                        <h1 id="hip-1-native-on-chain-cron-scheduling-chronos-module--precompile"><a class="header" href="#hip-1-native-on-chain-cron-scheduling-chronos-module--precompile">HIP-1: Native On-chain Cron Scheduling (Chronos Module &amp; Precompile)</a></h1>
+<ul>
+<li><strong>Description</strong>: Introduce a native cron scheduling module (<strong>Chronos</strong>) with a dedicated EVM precompile, allowing developers to schedule and automate periodic tasks directly on-chain within the Helios blockchain.</li>
+<li><strong>Motivation</strong>: Decentralized applications often rely on external cron scheduling services, introducing complexity, reliability concerns, and potential security risks. A native cron scheduling system provides a decentralized, secure, and developer-friendly solution.</li>
+</ul>
+<h2 id="abstract"><a class="header" href="#abstract">Abstract</a></h2>
+<p>The Chronos module offers native cron job scheduling directly integrated into Helios blockchain through a dedicated EVM precompile, allowing for automated periodic execution of smart contract methods. This simplifies the creation and management of scheduled tasks, significantly enhancing decentralized application development.</p>
+<h2 id="motivation"><a class="header" href="#motivation">Motivation</a></h2>
+<p>Blockchain applications require periodic automated execution of smart contract methods. The existing external solutions are neither fully decentralized nor optimal in terms of security and efficiency. A built-in cron scheduling mechanism ensures reliability, decentralization, and seamless integration.</p>
+<h2 id="specification"><a class="header" href="#specification">Specification</a></h2>
+<h3 id="key-features"><a class="header" href="#key-features">Key Features</a></h3>
+<ul>
+<li><strong>Native Integration:</strong> Implemented as an EVM-compatible precompile (<code>0x0000000000000000000000000000000000000830</code>).</li>
+<li><strong>Cron Job Management:</strong> Includes functionalities for creating, updating, and canceling cron jobs.</li>
+<li><strong>Unique Cron Addresses:</strong> Each cron job is assigned a unique blockchain address.</li>
+<li><strong>Gas Management:</strong> Users deposit funds upon cron creation, covering continuous gas consumption (set at 100 gas per block) and executions costs.</li>
+<li><strong>Cron Lifecycle Events:</strong> Emits blockchain events (<code>CronCreated</code>, <code>CronModified</code>, <code>CronCancelled</code>) for enhanced transparency.</li>
+<li><strong>Automatic Cancellation:</strong> Cron jobs are canceled automatically when their balance reaches zero or a critical error occurs during execution.</li>
+<li><strong>Multiple RPC Endpoints:</strong> RPC endpoints to take a look cron(s) (querying).</li>
+</ul>
+<h3 id="technical-implementation"><a class="header" href="#technical-implementation">Technical Implementation</a></h3>
+<ul>
+<li>ABI provided for easy integration with popular web3 libraries such as Ethers.js.</li>
+</ul>
+<h2 id="acceptance-criteria"><a class="header" href="#acceptance-criteria">Acceptance Criteria</a></h2>
+<ul>
+<li><input disabled="" type="checkbox" checked=""/>
+Cron tasks can be created, updated, and canceled effectively.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Each cron task has a unique blockchain address.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Funds deposited during cron creation accurately manage and consume gas (100 gas per block).</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Cron jobs automatically cancel upon depletion of funds or errors.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Lifecycle events (<code>CronCreated</code>, <code>CronModified</code>, <code>CronCancelled</code>) accurately emitted.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Comprehensive unit and integration tests covering all key functionalities and edge cases.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Detailed developer documentation provided, including setup instructions, RPC endpoints, API usage, limitations, and best practices.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Successful cron task scheduling, execution, and lifecycle management.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Automatic cancellation behavior clearly defined and verifiable.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Robust documentation provided in <a href="https://hub.helioschain.network/docs/innovate/advanced-use-cases/">Chronos</a>.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Community feedback and peer reviews adequately addressed.</li>
+</ul>
+<h2 id="changelog"><a class="header" href="#changelog">Changelog</a></h2>
+<ul>
+<li>2025-04-14: Initiate the HIP-1</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../../index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
-                            <a rel="next prefetch" href="index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../../Approved/main/HIP/hip-2/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -206,8 +229,11 @@ Financial support provided to developers and projects building on the Helios blo
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../../index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
-                    <a rel="next prefetch" href="index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../../Approved/main/HIP/hip-2/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -222,13 +248,13 @@ Financial support provided to developers and projects building on the Helios blo
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../../../../elasticlunr.min.js"></script>
+        <script src="../../../../mark.min.js"></script>
+        <script src="../../../../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../../../../clipboard.min.js"></script>
+        <script src="../../../../highlight.js"></script>
+        <script src="../../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 
