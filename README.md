@@ -53,13 +53,13 @@ You **SHOULD NOT** draft an HIP, if any of the following are true:
 
 ## Glossary and Helios Gloss (HG)
 
-A template with instructions is provided at [mg-template](mg-template.md). See [HIP-15](./HIP/hip-15) for a definition of its functionality. See [HG-0](./HG/hg-0) for an example.
+A template with instructions is provided at [hg-template](hg-template.md). See [HIP-15](./HIP/hip-15) for a definition of its functionality. See [HG-0](./HG/hg-0) for an example.
 
 An alphabetically ordered list of terms is provided in the [glossary](https://github.com/helios-network/HIP/wiki/glossary).
 
 HGs serve to capture the **definitions** of terms introduced in the HIPs and HDs. The creation of a new HG requires an HIP or HG (since new terms are introduced through the HIP or HG).
 
-See [HG-0](./HG/hg-0) for an example to get started. A template is provided at [mg-template](mg-template.md).
+See [HG-0](./HG/hg-0) for an example to get started. A template is provided at [hg-template](hg-template.md).
 
 ## Files and numbering
 
