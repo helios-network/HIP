@@ -159,8 +159,6 @@ Currently the governance consists of [@jguyet](https://github.com/jguyet).
 
 For more information on the role of the editor, see [HIP-0: Editor](./HIP/mip-0/README.md#editor).
 
-Currently the editors are [@apenzk](https://github.com/apenzk).
-
 ## Code owners
 
 An author commits to becoming the owner of the HIP/HD they propose. This means that for any future changes to the HIP/HD the author will be notified.
