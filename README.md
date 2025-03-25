@@ -31,11 +31,11 @@ HDs serve to capture the **objectives** behind the **introduction** of a particu
 
 related to HIPs should be documented as an HD and stored in the HD directory.
 
-A **template with instructions** is provided at [md-template](md-template.md). See [HIP-0](./HIP/hip-0) for a definition of its functionality.
+A **template with instructions** is provided at [hd-template](hd-template.md). See [HIP-0](./HIP/hip-0) for a definition of its functionality.
 
 ## Helios Improvement Proposal (HIP)
 
-A **template with instructions** is provided at [mip-template](hip-template.md). See [HIP-0](./HIP/hip-0) for a definition of its functionality.
+A **template with instructions** is provided at [hip-template](hip-template.md). See [HIP-0](./HIP/hip-0) for a definition of its functionality.
 
 #### Deciding whether to propose
 
@@ -59,7 +59,7 @@ An alphabetically ordered list of terms is provided in the [glossary](https://gi
 
 HGs serve to capture the **definitions** of terms introduced in the HIPs and HDs. The creation of a new HG requires an HIP or HG (since new terms are introduced through the HIP or HG).
 
-See [HG-0](./HG/mg-0) for an example to get started. A template is provided at [mg-template](mg-template.md).
+See [HG-0](./HG/hg-0) for an example to get started. A template is provided at [mg-template](mg-template.md).
 
 ## Files and numbering
 
