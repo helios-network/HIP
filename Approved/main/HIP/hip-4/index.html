@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>HIP-2: Delegation Boost for Enhanced Staking - HIP</title>
+        <title>HIP-4: External Data Call Support via Hyperions - HIP</title>
 
 
         <!-- Custom HTML head -->
@@ -157,126 +157,142 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="hip-2-delegation-boost-for-enhanced-staking"><a class="header" href="#hip-2-delegation-boost-for-enhanced-staking">HIP-2: Delegation Boost for Enhanced Staking</a></h1>
+                        <h1 id="hip-4-external-data-call-support-via-hyperions"><a class="header" href="#hip-4-external-data-call-support-via-hyperions">HIP-4: External Data Call Support via Hyperions</a></h1>
 <h2 id="feature-overview"><a class="header" href="#feature-overview">Feature Overview</a></h2>
-<p>A new <strong>Delegation Boost</strong> mechanism has been introduced in the staking module, allowing delegators to deposit additional tokens (in a specialized “boosted” pool) that increase their rewards proportionally. This addition brings several novel concepts, parameters, and message types to the Cosmos-based network.</p>
+<p>This HIP introduces the capability for smart contracts on the Helios blockchain to initiate and receive data from external blockchains, such as Ethereum, using the Hyperion module and relayer infrastructure. The new system enables secure, verifiable, and programmable cross-chain calls with callback support, forming the foundation for decentralized oracle operations and cross-chain composability.</p>
 <h2 id="motivation"><a class="header" href="#motivation">Motivation</a></h2>
-<p>Standard delegation involves delegators bonding tokens directly to validators, but previously had no way to “boost” or multiply their stake without simply adding more tokens in the same manner. <strong>Delegation Boost</strong> introduces a secondary stake pool that augments the staking power of a validator and potentially increases the delegator’s reward payout. This fosters deeper collaboration between delegators and validators and opens up new economic incentives in the network.</p>
+<p>Helios aims to position itself as a highly interoperable blockchain platform. Enabling smart contracts to fetch and verify data from other blockchains significantly expands their utility and paves the way for cross-chain DeFi, external oracle integrations, and decentralized automation.</p>
+<p>This proposal introduces a full lifecycle of external data requests, including:</p>
+<ul>
+<li>A precompile interface callable from smart contracts</li>
+<li>Transaction creation and management through the Hyperion module</li>
+<li>Execution, validation, and attestation through orchestrators</li>
+<li>Callback and refund mechanisms</li>
+</ul>
 <h2 id="objectives"><a class="header" href="#objectives">Objectives</a></h2>
 <ul>
-<li><strong>Provide Flexible Staking Options:</strong> Enable a dedicated method to “boost” stake in addition to normal delegation, with potential for higher rewards.</li>
-<li><strong>Enforce Minimum Boost Requirements:</strong> Allow validators to specify a <code>min_delegation</code> as a threshold for boosted delegation.</li>
-<li><strong>Enable Enhanced Reward Calculations:</strong> Incorporate boosted delegations into reward distribution using a flexible multiplier defined by a network parameter (<code>BoostPercentage</code>).</li>
-<li><strong>Streamline Staking Flows:</strong> Maintain a clear distinction between regular staked tokens and boosted tokens, with dedicated messages for deposit and withdrawal.</li>
+<li>Allow smart contracts to request external blockchain calls with callback execution</li>
+<li>Provide secure and auditable data fetching infrastructure with validator attestation</li>
+<li>Support gas fees and refunds to incentivize fair relay and execution</li>
+<li>Make the system configurable through governance for gas pricing and resource limits</li>
 </ul>
 <h2 id="key-features"><a class="header" href="#key-features">Key Features</a></h2>
+<h3 id="precompile-requestdata"><a class="header" href="#precompile-requestdata">Precompile: <code>requestData</code></a></h3>
+<p>A Solidity-accessible function defined at a fixed precompile address (e.g., <code>0x000...0900</code>) exposes the <code>requestData</code> function:</p>
+<pre><code class="language-solidity">function requestData(
+    uint64 chainId,
+    address contractAddress,
+    bytes calldata abiCall,
+    string calldata callbackSelector,
+    uint256 maxGasPrice,
+    uint256 gasLimit
+) external payable returns (uint256 taskId);
+</code></pre>
+<p>This call:</p>
+<ul>
+<li>Validates parameters and user balance</li>
+<li>Reserves execution fee via <code>SendCoinsFromAccountToModule</code></li>
+<li>Schedules a Chronos job for callback</li>
+<li>Constructs and stores an <code>OutgoingExternalDataTx</code> in the Hyperion module</li>
+</ul>
+<h3 id="external-call-lifecycle"><a class="header" href="#external-call-lifecycle">External Call Lifecycle</a></h3>
 <ol>
-<li>
-<p><strong>Boosted Pool Account</strong></p>
-<ul>
-<li>A new module account (<code>boosted_tokens_pool</code>) holds tokens delegated as a boost.</li>
-<li>Ensures clear tracking and isolation of boosted tokens from regular staked tokens.</li>
-</ul>
-</li>
-<li>
-<p><strong>Boost Ratio &amp; Rewards Multiplier</strong></p>
-<ul>
-<li>The distribution module calculates a “boost ratio” for a validator by comparing its total boosted stake to its overall staked amount.</li>
-<li>A configurable <code>BoostPercentage</code> parameter governs how much of a multiplier this ratio adds to the rewards.</li>
-</ul>
-</li>
-<li>
-<p><strong>Validator-Based Settings</strong></p>
-<ul>
-<li><strong><code>min_delegation</code></strong>: A validator can specify the minimum boost required for delegators.</li>
-<li><strong><code>delegate_authorization</code></strong>: Determines whether anyone other than the validator can add a boosted delegation.</li>
-</ul>
-</li>
-<li>
-<p><strong>New Message Types</strong></p>
-<ul>
-<li><strong><code>DelegateBoost(...)</code></strong>: Delegates tokens to the boosted pool, tracked separately from normal staking.</li>
-<li><strong><code>UnDelegateBoost(...)</code></strong>: Withdraws boosted tokens, reducing the delegation’s effective multiplier.</li>
-</ul>
-</li>
-<li>
-<p><strong>Enhanced Store and Queries</strong></p>
-<ul>
-<li>New keys and indexing in the staking keeper track total boosts for each validator and each (delegator, validator) pair.</li>
-<li>Functions like <code>GetTotalBoostedDelegation</code> and <code>GetValidatorDelegationsBoost</code> enable easier lookups of boosted stakes.</li>
-</ul>
-</li>
-<li>
-<p><strong>Genesis &amp; Parameter Integration</strong></p>
-<ul>
-<li>The chain’s genesis process now initializes the <code>boosted_tokens_pool</code> and parameters such as <code>BoostPercentage</code>.</li>
-<li>Operators can manage <code>BoostPercentage</code>, <code>min_delegation</code>, and <code>delegate_authorization</code> via governance or direct configuration.</li>
-</ul>
-</li>
+<li><strong>Request Submitted:</strong> The smart contract calls <code>requestData</code>.</li>
+<li><strong>Cron Job Scheduled:</strong> Chronos schedules a callback to the contract.</li>
+<li><strong>Relayer Fetches:</strong> A registered Hyperion relayer fetches the external call data.</li>
+<li><strong>Validator Attestation:</strong> Validators vote on the result.</li>
+<li><strong>Threshold Reached:</strong> Upon reaching quorum, data is finalized and callback triggered.</li>
+<li><strong>Callback Execution:</strong> The smart contract’s <code>callBack(bytes data, bytes err)</code> function is invoked.</li>
+<li><strong>Reward Distribution:</strong> Orchestrators are rewarded from the initial fee.</li>
+<li><strong>Refund:</strong> Expired or invalid transactions are refunded.</li>
 </ol>
+<h3 id="governance-parameters"><a class="header" href="#governance-parameters">Governance Parameters</a></h3>
+<ul>
+<li><code>MinCallExternalDataGas</code>: Minimum required gas limit for a valid external data call</li>
+<li><code>HyperionFeePercentage</code>: Portion of fee to reward orchestrators</li>
+<li><code>MaxCallbackDelay</code>: Max block delay before automatic refund</li>
+</ul>
 <h2 id="technical-implementation"><a class="header" href="#technical-implementation">Technical Implementation</a></h2>
 <ul>
-<li>
-<p><strong>Extended Staking Keeper Methods:</strong></p>
-<ul>
-<li><code>DelegateBoost</code>, <code>UnDelegateBoost</code>, <code>SetDelegationBoost</code>, and <code>GetDelegationBoost</code> orchestrate storing boosted tokens and updating delegated amounts.</li>
-<li>The keeper enforces <code>min_delegation</code> and <code>delegate_authorization</code> when delegations occur.</li>
-</ul>
-</li>
-<li>
-<p><strong>Modified Reward Distribution Logic:</strong></p>
-<ul>
-<li>Updated distribution code fetches a validator’s <code>boostedTotal</code> tokens, calculates a <code>boostRatio</code>, and multiplies the base rewards by <code>1 + (BoostPercentage * boostRatio)</code> (capped at a maximum of 1:1 ratio for the boost portion).</li>
-</ul>
-</li>
-<li>
-<p><strong>New Proto Definitions:</strong></p>
-<ul>
-<li><code>MsgCreateValidator</code> and <code>MsgEditValidator</code> now include <code>min_delegation</code> and <code>delegate_authorization</code>.</li>
-<li>Messages for delegating/undelegating boosts are defined and handle moving tokens to and from <code>boosted_tokens_pool</code>.</li>
-</ul>
-</li>
-<li>
-<p><strong>Module Accounts &amp; Balances:</strong></p>
-<ul>
-<li>All boosted tokens are transferred to the <code>boosted_tokens_pool</code> account via the Cosmos SDK’s Bank module.</li>
-<li>On undelegation, tokens are properly returned to delegators.</li>
-</ul>
-</li>
+<li><strong>New Module Code:</strong> <code>external_data.go</code> manages transaction creation, storage, refund, reward, and deletion.</li>
+<li><strong>EndBlock Hook:</strong> <code>executeAllExternalDataTxs()</code> is called to check for quorum and execute validated calls.</li>
+<li><strong>Relayer Integration:</strong> Added logic in Hyperion Program to fetch results and submit claims.</li>
+<li><strong>Chronos Integration:</strong> Callback logic with storage of result and error in <code>CronCallBackData</code>.</li>
+<li><strong>Contract Verification:</strong> Ensures ABI callback exists before transaction is accepted.</li>
 </ul>
 <h2 id="acceptance-criteria"><a class="header" href="#acceptance-criteria">Acceptance Criteria</a></h2>
 <ul>
-<li><input disabled="" type="checkbox" checked=""/>
-<strong>Boosted Delegations:</strong> Delegators can deposit additional tokens and have them reflected in higher potential rewards.</li>
-<li><input disabled="" type="checkbox" checked=""/>
-<strong>Minimal Impact on Existing Delegations:</strong> Regular staking remains unaffected; boosted delegation is purely additive.</li>
-<li><input disabled="" type="checkbox" checked=""/>
-<strong>Validator Constraints:</strong> Validators can enforce a minimum boost requirement, and can restrict who is allowed to boost.</li>
-<li><input disabled="" type="checkbox" checked=""/>
-<strong>Reward Calculation Updates:</strong> The distribution module correctly calculates rewards with a <code>boostRatio</code> multiplier, respecting the <code>BoostPercentage</code> parameter.</li>
-<li><input disabled="" type="checkbox" checked=""/>
-<strong>Secure Fund Handling:</strong> Tokens are transferred securely to the <code>boosted_tokens_pool</code> and only returned on undelegation.</li>
-<li><input disabled="" type="checkbox"/>
-<strong>Documentation &amp; User Guide:</strong> Provide detailed instructions for validators and delegators on enabling, delegating, and withdrawing boosts.</li>
+<li>Smart contracts can successfully initiate and receive data from external blockchains via the precompile.</li>
+<li>A quorum of validators finalizes the call after attesting to the result.</li>
+<li>The requested callback is executed in Chronos only after validation.</li>
+<li>Callback errors and results are correctly routed and stored.</li>
+<li>Relayers are able to fetch and submit data in a timely and secure manner.</li>
+<li>The system auto-refunds expired or invalid calls.</li>
 </ul>
+<h2 id="example"><a class="header" href="#example">Example</a></h2>
+<p>A smart contract requests ETH/USD price data from Ethereum and updates its state:</p>
+<pre><code class="language-solidity">function fetchETHPrice() external {
+    address source = 0x...;
+    bytes memory encodedData = abi.encodeWithSignature("last_price(uint256)", 0);
+    string memory callback = "callBack";
+    uint256 maxGasPrice = 10 gwei;
+    uint256 gasLimit = 20_000_000 wei;
+
+    uint256 taskId = HyperionRequestor.requestData(
+        11155111, // Ethereum Sepolia
+        source,
+        encodedData,
+        callback,
+        maxGasPrice,
+        gasLimit
+    );
+}
+
+function callBack(bytes memory data, bytes memory err) public {
+    require(err.length == 0);
+    uint256 price = abi.decode(data, (uint256));
+    updatePrice(price);
+}
+</code></pre>
 <h2 id="documentation"><a class="header" href="#documentation">Documentation</a></h2>
+<p>Full documentation will be published under <code>docs/</code> and include:</p>
 <ul>
-<li><strong>Developer References:</strong> Covers all new messages (<code>DelegateBoost</code>, <code>UnDelegateBoost</code>), relevant keeper methods, and store keys.</li>
-<li><strong>Validator Setup:</strong> Explains configuring <code>min_delegation</code> and <code>delegate_authorization</code>.</li>
-<li><strong>Reward Mechanics:</strong> Describes the boost ratio calculation, capped multiplier, and the distribution flow for boosted rewards.</li>
-<li><strong>Governance:</strong> Outlines how parameters like <code>BoostPercentage</code> may be updated through governance proposals.</li>
+<li>Precompile interface and ABI specs</li>
+<li>Supported chain configurations</li>
+<li>Chronos and Hyperion params</li>
+<li>Relayer setup guide</li>
+<li>Security model for quorum-based validation</li>
+<li>Fee calculations and governance toggles</li>
 </ul>
-<p>By integrating <strong>Delegation Boost</strong>, Helios enhances the overall staking experience, introducing novel opportunities for delegators and validators alike to optimize their on-chain economic strategies while maintaining network security and stability.</p>
+<h2 id="governance-proposal"><a class="header" href="#governance-proposal">Governance Proposal</a></h2>
+<p>Title: Enable External Data Call Infrastructure
+Summary: Enable support for cross-chain external data calls with Hyperion module, relayer, and callback support.
+Initial Parameters:</p>
+<ul>
+<li><code>MinCallExternalDataGas</code>: 2,000,000</li>
+<li><code>HyperionFeePercentage</code>: 50%</li>
+<li><code>MaxCallbackDelay</code>: 100 blocks</li>
+</ul>
+<h2 id="status"><a class="header" href="#status">Status</a></h2>
+<ul>
+<li>Draft</li>
+</ul>
+<h2 id="authors"><a class="header" href="#authors">Authors</a></h2>
+<ul>
+<li>Helios Core Dev Team</li>
+</ul>
+<hr />
+<p>HIP-4 lays the foundation for oracle operations and programmable cross-chain logic. By establishing a reliable, auditable, and contract-accessible interface for external data calls, Helios expands the scope of smart contracts to include real-world and interchain data in a decentralized manner.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../../Approved/main/HIP/hip-1/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../../Approved/main/HIP/hip-3/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../../Approved/main/HIP/hip-3/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../../index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -286,11 +302,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../../Approved/main/HIP/hip-1/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../../Approved/main/HIP/hip-3/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../../Approved/main/HIP/hip-3/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../../index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
