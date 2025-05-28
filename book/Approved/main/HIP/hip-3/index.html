@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>HIP-2: Delegation Boost for Enhanced Staking - HIP</title>
+        <title>HIP-3: Smart Contract Creator Incentives - HIP</title>
 
 
         <!-- Custom HTML head -->
@@ -157,126 +157,101 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="hip-2-delegation-boost-for-enhanced-staking"><a class="header" href="#hip-2-delegation-boost-for-enhanced-staking">HIP-2: Delegation Boost for Enhanced Staking</a></h1>
+                        <h1 id="hip-3-smart-contract-creator-incentives"><a class="header" href="#hip-3-smart-contract-creator-incentives">HIP-3: Smart Contract Creator Incentives</a></h1>
+<hr />
 <h2 id="feature-overview"><a class="header" href="#feature-overview">Feature Overview</a></h2>
-<p>A new <strong>Delegation Boost</strong> mechanism has been introduced in the staking module, allowing delegators to deposit additional tokens (in a specialized “boosted” pool) that increase their rewards proportionally. This addition brings several novel concepts, parameters, and message types to the Cosmos-based network.</p>
+<p>Introduce a protocol-level incentive mechanism that rewards smart contract creators with a configurable share of transaction fees when their contracts are executed during block processing. The system defaults to allocating <strong>10%</strong> of the transaction fee to the creator, with governance-enabled control to modify or disable the distribution logic without affecting historical metadata or creator attribution.</p>
+<hr />
 <h2 id="motivation"><a class="header" href="#motivation">Motivation</a></h2>
-<p>Standard delegation involves delegators bonding tokens directly to validators, but previously had no way to “boost” or multiply their stake without simply adding more tokens in the same manner. <strong>Delegation Boost</strong> introduces a secondary stake pool that augments the staking power of a validator and potentially increases the delegator’s reward payout. This fosters deeper collaboration between delegators and validators and opens up new economic incentives in the network.</p>
+<p>The success of Helios depends on the active participation of smart contract developers. Under the current fee structure, developers do not receive any share of the fees generated when their contracts are used — despite driving value and activity on the network. This HIP proposes a protocol-native way to compensate creators for their contributions in proportion to actual on-chain usage.</p>
+<p>Such a system aligns economic incentives, promotes long-term developer commitment, and encourages the deployment of more robust and innovative smart contracts directly on Helios.</p>
+<hr />
 <h2 id="objectives"><a class="header" href="#objectives">Objectives</a></h2>
 <ul>
-<li><strong>Provide Flexible Staking Options:</strong> Enable a dedicated method to “boost” stake in addition to normal delegation, with potential for higher rewards.</li>
-<li><strong>Enforce Minimum Boost Requirements:</strong> Allow validators to specify a <code>min_delegation</code> as a threshold for boosted delegation.</li>
-<li><strong>Enable Enhanced Reward Calculations:</strong> Incorporate boosted delegations into reward distribution using a flexible multiplier defined by a network parameter (<code>BoostPercentage</code>).</li>
-<li><strong>Streamline Staking Flows:</strong> Maintain a clear distinction between regular staked tokens and boosted tokens, with dedicated messages for deposit and withdrawal.</li>
+<li>Implement an automated, usage-based revenue-sharing mechanism for smart contract creators.</li>
+<li>Allow governance to manage:
+<ul>
+<li>The incentive percentage (default 10%).</li>
+<li>The on/off state of the feature.</li>
 </ul>
+</li>
+<li>Ensure toggling the system off <strong>does not erase</strong> on-chain tracking of creator metadata or usage history.</li>
+<li>Promote sustainability and self-incentivized developer participation.</li>
+</ul>
+<hr />
 <h2 id="key-features"><a class="header" href="#key-features">Key Features</a></h2>
-<ol>
-<li>
-<p><strong>Boosted Pool Account</strong></p>
 <ul>
-<li>A new module account (<code>boosted_tokens_pool</code>) holds tokens delegated as a boost.</li>
-<li>Ensures clear tracking and isolation of boosted tokens from regular staked tokens.</li>
+<li><strong>Dynamic Fee Sharing:</strong> A fixed share of transaction fees is routed to the original deployer (creator) of a smart contract if it is invoked during execution.</li>
+<li><strong>Governance Parameter Control:</strong>
+<ul>
+<li><code>enable_revenue</code> (bool): Enables or disables fee routing.</li>
+<li><code>developer_shares</code> (math.LegacyDec, e.g., 0.100000000000 = 10%): Defines fee share percentage in basis points.</li>
 </ul>
 </li>
-<li>
-<p><strong>Boost Ratio &amp; Rewards Multiplier</strong></p>
-<ul>
-<li>The distribution module calculates a “boost ratio” for a validator by comparing its total boosted stake to its overall staked amount.</li>
-<li>A configurable <code>BoostPercentage</code> parameter governs how much of a multiplier this ratio adds to the rewards.</li>
+<li><strong>Secure Attribution:</strong> Uses the original <code>msg.sender</code> during contract deployment to identify the creator.</li>
+<li><strong>Non-Destructive Disabling:</strong> When turned off, no further revenue is routed, but historical data and attribution remain intact for future potential reactivation.</li>
+<li><strong>Upgradeable Architecture:</strong> Easily extensible for future enhancements like usage-based weighting or team-level revenue sharing.</li>
 </ul>
-</li>
-<li>
-<p><strong>Validator-Based Settings</strong></p>
-<ul>
-<li><strong><code>min_delegation</code></strong>: A validator can specify the minimum boost required for delegators.</li>
-<li><strong><code>delegate_authorization</code></strong>: Determines whether anyone other than the validator can add a boosted delegation.</li>
-</ul>
-</li>
-<li>
-<p><strong>New Message Types</strong></p>
-<ul>
-<li><strong><code>DelegateBoost(...)</code></strong>: Delegates tokens to the boosted pool, tracked separately from normal staking.</li>
-<li><strong><code>UnDelegateBoost(...)</code></strong>: Withdraws boosted tokens, reducing the delegation’s effective multiplier.</li>
-</ul>
-</li>
-<li>
-<p><strong>Enhanced Store and Queries</strong></p>
-<ul>
-<li>New keys and indexing in the staking keeper track total boosts for each validator and each (delegator, validator) pair.</li>
-<li>Functions like <code>GetTotalBoostedDelegation</code> and <code>GetValidatorDelegationsBoost</code> enable easier lookups of boosted stakes.</li>
-</ul>
-</li>
-<li>
-<p><strong>Genesis &amp; Parameter Integration</strong></p>
-<ul>
-<li>The chain’s genesis process now initializes the <code>boosted_tokens_pool</code> and parameters such as <code>BoostPercentage</code>.</li>
-<li>Operators can manage <code>BoostPercentage</code>, <code>min_delegation</code>, and <code>delegate_authorization</code> via governance or direct configuration.</li>
-</ul>
-</li>
-</ol>
+<hr />
 <h2 id="technical-implementation"><a class="header" href="#technical-implementation">Technical Implementation</a></h2>
 <ul>
-<li>
-<p><strong>Extended Staking Keeper Methods:</strong></p>
+<li><strong>Execution Tracing:</strong> The block processing engine traces all contracts invoked in a transaction’s execution path.</li>
+<li><strong>Creator Lookup:</strong> The system maps each contract’s address to the original deployer address stored at deployment time.</li>
+<li><strong>Fee Redirection:</strong> Before burning or redistribution, 10% of the transaction fee is routed to the contract creator.</li>
+<li><strong>Governance Configuration:</strong>
 <ul>
-<li><code>DelegateBoost</code>, <code>UnDelegateBoost</code>, <code>SetDelegationBoost</code>, and <code>GetDelegationBoost</code> orchestrate storing boosted tokens and updating delegated amounts.</li>
-<li>The keeper enforces <code>min_delegation</code> and <code>delegate_authorization</code> when delegations occur.</li>
+<li>Incentive parameters are stored and updated through the parameter module.</li>
+<li>Governance proposals can update the parameters or disable the feature entirely.</li>
 </ul>
 </li>
-<li>
-<p><strong>Modified Reward Distribution Logic:</strong></p>
-<ul>
-<li>Updated distribution code fetches a validator’s <code>boostedTotal</code> tokens, calculates a <code>boostRatio</code>, and multiplies the base rewards by <code>1 + (BoostPercentage * boostRatio)</code> (capped at a maximum of 1:1 ratio for the boost portion).</li>
+<li><strong>Module Integration:</strong> Likely implemented as part of the fee handling logic or a new standalone incentives module.</li>
 </ul>
-</li>
-<li>
-<p><strong>New Proto Definitions:</strong></p>
-<ul>
-<li><code>MsgCreateValidator</code> and <code>MsgEditValidator</code> now include <code>min_delegation</code> and <code>delegate_authorization</code>.</li>
-<li>Messages for delegating/undelegating boosts are defined and handle moving tokens to and from <code>boosted_tokens_pool</code>.</li>
-</ul>
-</li>
-<li>
-<p><strong>Module Accounts &amp; Balances:</strong></p>
-<ul>
-<li>All boosted tokens are transferred to the <code>boosted_tokens_pool</code> account via the Cosmos SDK’s Bank module.</li>
-<li>On undelegation, tokens are properly returned to delegators.</li>
-</ul>
-</li>
-</ul>
+<hr />
 <h2 id="acceptance-criteria"><a class="header" href="#acceptance-criteria">Acceptance Criteria</a></h2>
 <ul>
 <li><input disabled="" type="checkbox" checked=""/>
-<strong>Boosted Delegations:</strong> Delegators can deposit additional tokens and have them reflected in higher potential rewards.</li>
+Smart contract creators receive 10% of transaction fees by default when their contracts are executed.</li>
 <li><input disabled="" type="checkbox" checked=""/>
-<strong>Minimal Impact on Existing Delegations:</strong> Regular staking remains unaffected; boosted delegation is purely additive.</li>
+Governance can modify the reward percentage (in basis points).</li>
 <li><input disabled="" type="checkbox" checked=""/>
-<strong>Validator Constraints:</strong> Validators can enforce a minimum boost requirement, and can restrict who is allowed to boost.</li>
+Governance can enable or disable the incentive logic.</li>
 <li><input disabled="" type="checkbox" checked=""/>
-<strong>Reward Calculation Updates:</strong> The distribution module correctly calculates rewards with a <code>boostRatio</code> multiplier, respecting the <code>BoostPercentage</code> parameter.</li>
+Attribution mechanism reliably identifies creators of contracts deployed via <code>CREATE</code> and <code>CREATE2</code>.</li>
 <li><input disabled="" type="checkbox" checked=""/>
-<strong>Secure Fund Handling:</strong> Tokens are transferred securely to the <code>boosted_tokens_pool</code> and only returned on undelegation.</li>
-<li><input disabled="" type="checkbox"/>
-<strong>Documentation &amp; User Guide:</strong> Provide detailed instructions for validators and delegators on enabling, delegating, and withdrawing boosts.</li>
+Revenue routing occurs only when a contract is actively used in a transaction.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+System emits <code>types.EventTypeDistributeDevRevenue</code> events with attributes including sender address, contract address, withdrawer address, and fee amount for transparency.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+When disabled, metadata about contract creators is retained.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Thorough unit and integration testing validate the entire flow.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Full documentation describing incentive logic, governance control, edge cases, and integration best practices.</li>
 </ul>
+<hr />
 <h2 id="documentation"><a class="header" href="#documentation">Documentation</a></h2>
 <ul>
-<li><strong>Developer References:</strong> Covers all new messages (<code>DelegateBoost</code>, <code>UnDelegateBoost</code>), relevant keeper methods, and store keys.</li>
-<li><strong>Validator Setup:</strong> Explains configuring <code>min_delegation</code> and <code>delegate_authorization</code>.</li>
-<li><strong>Reward Mechanics:</strong> Describes the boost ratio calculation, capped multiplier, and the distribution flow for boosted rewards.</li>
-<li><strong>Governance:</strong> Outlines how parameters like <code>BoostPercentage</code> may be updated through governance proposals.</li>
+<li>
+<p>Detailed developer documentation will be published under</p>
+<p><a href="https://hub.helioschain.network/docs/innovate/advanced-use-cases/">Smart Contract Creator Incentives</a></p>
+<p>and will include:</p>
+<ul>
+<li>Governance configuration guide.</li>
+<li>Developer expectations and earnings logic.</li>
+<li>Creator tracking methodology and known limitations.</li>
 </ul>
-<p>By integrating <strong>Delegation Boost</strong>, Helios enhances the overall staking experience, introducing novel opportunities for delegators and validators alike to optimize their on-chain economic strategies while maintaining network security and stability.</p>
+</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../../Approved/main/HIP/hip-1/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../../Approved/main/HIP/hip-2/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../../Approved/main/HIP/hip-3/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../../Approved/main/HIP/hip-4/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -286,11 +261,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../../Approved/main/HIP/hip-1/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../../Approved/main/HIP/hip-2/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../../Approved/main/HIP/hip-3/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../../Approved/main/HIP/hip-4/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

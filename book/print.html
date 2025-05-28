@@ -197,11 +197,15 @@ Financial support provided to developers and projects building on the Helios blo
 <ul>
 <li><a href="Approved/main/HIP/hip-1/">HIP-1: Native On-chain Cron Scheduling (Chronos Module &amp; Precompile)</a></li>
 <li><a href="Approved/main/HIP/hip-2/">HIP-2: Delegation Boost for Enhanced Staking</a></li>
+<li><a href="Approved/main/HIP/hip-3/">HIP-3: Smart Contract Creator Incentives</a></li>
+<li><a href="Approved/main/HIP/hip-4/">HIP-4: External Data Call Support via Hyperions</a></li>
 </ul>
 <h3 id="hds"><a class="header" href="#hds">HDs</a></h3>
 <ul>
 <li><a href="Approved/main/HD/hd-1/">HD-1: Chronos Module &amp; Precompile</a></li>
 <li><a href="Approved/main/HD/hd-2/">HD-2: Delegation Boost for Enhanced Staking</a></li>
+<li><a href="Approved/main/HD/hd-3/">HD-3</a></li>
+<li><a href="Approved/main/HD/hd-4/">HD-4: External Data Call Support via Hyperions</a></li>
 </ul>
 <h2 id="review"><a class="header" href="#review">Review</a></h2>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="welcome-to-the-helios-network-hip-book-1"><a class="header" href="#welcome-to-the-helios-network-hip-book-1">Welcome to the Helios Network HIP Book</a></h1>
@@ -210,11 +214,15 @@ Financial support provided to developers and projects building on the Helios blo
 <ul>
 <li><a href="Approved/main/HIP/hip-1/">HIP-1: Native On-chain Cron Scheduling (Chronos Module &amp; Precompile)</a></li>
 <li><a href="Approved/main/HIP/hip-2/">HIP-2: Delegation Boost for Enhanced Staking</a></li>
+<li><a href="Approved/main/HIP/hip-3/">HIP-3: Smart Contract Creator Incentives</a></li>
+<li><a href="Approved/main/HIP/hip-4/">HIP-4: External Data Call Support via Hyperions</a></li>
 </ul>
 <h3 id="hds-1"><a class="header" href="#hds-1">HDs</a></h3>
 <ul>
 <li><a href="Approved/main/HD/hd-1/">HD-1: Chronos Module &amp; Precompile</a></li>
 <li><a href="Approved/main/HD/hd-2/">HD-2: Delegation Boost for Enhanced Staking</a></li>
+<li><a href="Approved/main/HD/hd-3/">HD-3</a></li>
+<li><a href="Approved/main/HD/hd-4/">HD-4: External Data Call Support via Hyperions</a></li>
 </ul>
 <h2 id="review-1"><a class="header" href="#review-1">Review</a></h2>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="hip-1-native-on-chain-cron-scheduling-chronos-module--precompile"><a class="header" href="#hip-1-native-on-chain-cron-scheduling-chronos-module--precompile">HIP-1: Native On-chain Cron Scheduling (Chronos Module &amp; Precompile)</a></h1>
@@ -380,31 +388,246 @@ Community feedback and peer reviews adequately addressed.</li>
 <li><strong>Governance:</strong> Outlines how parameters like <code>BoostPercentage</code> may be updated through governance proposals.</li>
 </ul>
 <p>By integrating <strong>Delegation Boost</strong>, Helios enhances the overall staking experience, introducing novel opportunities for delegators and validators alike to optimize their on-chain economic strategies while maintaining network security and stability.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hip-3-smart-contract-creator-incentives"><a class="header" href="#hip-3-smart-contract-creator-incentives">HIP-3: Smart Contract Creator Incentives</a></h1>
+<hr />
+<h2 id="feature-overview-1"><a class="header" href="#feature-overview-1">Feature Overview</a></h2>
+<p>Introduce a protocol-level incentive mechanism that rewards smart contract creators with a configurable share of transaction fees when their contracts are executed during block processing. The system defaults to allocating <strong>10%</strong> of the transaction fee to the creator, with governance-enabled control to modify or disable the distribution logic without affecting historical metadata or creator attribution.</p>
+<hr />
+<h2 id="motivation-2"><a class="header" href="#motivation-2">Motivation</a></h2>
+<p>The success of Helios depends on the active participation of smart contract developers. Under the current fee structure, developers do not receive any share of the fees generated when their contracts are used — despite driving value and activity on the network. This HIP proposes a protocol-native way to compensate creators for their contributions in proportion to actual on-chain usage.</p>
+<p>Such a system aligns economic incentives, promotes long-term developer commitment, and encourages the deployment of more robust and innovative smart contracts directly on Helios.</p>
+<hr />
+<h2 id="objectives-1"><a class="header" href="#objectives-1">Objectives</a></h2>
+<ul>
+<li>Implement an automated, usage-based revenue-sharing mechanism for smart contract creators.</li>
+<li>Allow governance to manage:
+<ul>
+<li>The incentive percentage (default 10%).</li>
+<li>The on/off state of the feature.</li>
+</ul>
+</li>
+<li>Ensure toggling the system off <strong>does not erase</strong> on-chain tracking of creator metadata or usage history.</li>
+<li>Promote sustainability and self-incentivized developer participation.</li>
+</ul>
+<hr />
+<h2 id="key-features-2"><a class="header" href="#key-features-2">Key Features</a></h2>
+<ul>
+<li><strong>Dynamic Fee Sharing:</strong> A fixed share of transaction fees is routed to the original deployer (creator) of a smart contract if it is invoked during execution.</li>
+<li><strong>Governance Parameter Control:</strong>
+<ul>
+<li><code>enable_revenue</code> (bool): Enables or disables fee routing.</li>
+<li><code>developer_shares</code> (math.LegacyDec, e.g., 0.100000000000 = 10%): Defines fee share percentage in basis points.</li>
+</ul>
+</li>
+<li><strong>Secure Attribution:</strong> Uses the original <code>msg.sender</code> during contract deployment to identify the creator.</li>
+<li><strong>Non-Destructive Disabling:</strong> When turned off, no further revenue is routed, but historical data and attribution remain intact for future potential reactivation.</li>
+<li><strong>Upgradeable Architecture:</strong> Easily extensible for future enhancements like usage-based weighting or team-level revenue sharing.</li>
+</ul>
+<hr />
+<h2 id="technical-implementation-2"><a class="header" href="#technical-implementation-2">Technical Implementation</a></h2>
+<ul>
+<li><strong>Execution Tracing:</strong> The block processing engine traces all contracts invoked in a transaction’s execution path.</li>
+<li><strong>Creator Lookup:</strong> The system maps each contract’s address to the original deployer address stored at deployment time.</li>
+<li><strong>Fee Redirection:</strong> Before burning or redistribution, 10% of the transaction fee is routed to the contract creator.</li>
+<li><strong>Governance Configuration:</strong>
+<ul>
+<li>Incentive parameters are stored and updated through the parameter module.</li>
+<li>Governance proposals can update the parameters or disable the feature entirely.</li>
+</ul>
+</li>
+<li><strong>Module Integration:</strong> Likely implemented as part of the fee handling logic or a new standalone incentives module.</li>
+</ul>
+<hr />
+<h2 id="acceptance-criteria-2"><a class="header" href="#acceptance-criteria-2">Acceptance Criteria</a></h2>
+<ul>
+<li><input disabled="" type="checkbox" checked=""/>
+Smart contract creators receive 10% of transaction fees by default when their contracts are executed.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Governance can modify the reward percentage (in basis points).</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Governance can enable or disable the incentive logic.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Attribution mechanism reliably identifies creators of contracts deployed via <code>CREATE</code> and <code>CREATE2</code>.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Revenue routing occurs only when a contract is actively used in a transaction.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+System emits <code>types.EventTypeDistributeDevRevenue</code> events with attributes including sender address, contract address, withdrawer address, and fee amount for transparency.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+When disabled, metadata about contract creators is retained.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Thorough unit and integration testing validate the entire flow.</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Full documentation describing incentive logic, governance control, edge cases, and integration best practices.</li>
+</ul>
+<hr />
+<h2 id="documentation-1"><a class="header" href="#documentation-1">Documentation</a></h2>
+<ul>
+<li>
+<p>Detailed developer documentation will be published under</p>
+<p><a href="https://hub.helioschain.network/docs/innovate/advanced-use-cases/">Smart Contract Creator Incentives</a></p>
+<p>and will include:</p>
+<ul>
+<li>Governance configuration guide.</li>
+<li>Developer expectations and earnings logic.</li>
+<li>Creator tracking methodology and known limitations.</li>
+</ul>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hip-4-external-data-call-support-via-hyperions"><a class="header" href="#hip-4-external-data-call-support-via-hyperions">HIP-4: External Data Call Support via Hyperions</a></h1>
+<h2 id="feature-overview-2"><a class="header" href="#feature-overview-2">Feature Overview</a></h2>
+<p>This HIP introduces the capability for smart contracts on the Helios blockchain to initiate and receive data from external blockchains, such as Ethereum, using the Hyperion module and relayer infrastructure. The new system enables secure, verifiable, and programmable cross-chain calls with callback support, forming the foundation for decentralized oracle operations and cross-chain composability.</p>
+<h2 id="motivation-3"><a class="header" href="#motivation-3">Motivation</a></h2>
+<p>Helios aims to position itself as a highly interoperable blockchain platform. Enabling smart contracts to fetch and verify data from other blockchains significantly expands their utility and paves the way for cross-chain DeFi, external oracle integrations, and decentralized automation.</p>
+<p>This proposal introduces a full lifecycle of external data requests, including:</p>
+<ul>
+<li>A precompile interface callable from smart contracts</li>
+<li>Transaction creation and management through the Hyperion module</li>
+<li>Execution, validation, and attestation through orchestrators</li>
+<li>Callback and refund mechanisms</li>
+</ul>
+<h2 id="objectives-2"><a class="header" href="#objectives-2">Objectives</a></h2>
+<ul>
+<li>Allow smart contracts to request external blockchain calls with callback execution</li>
+<li>Provide secure and auditable data fetching infrastructure with validator attestation</li>
+<li>Support gas fees and refunds to incentivize fair relay and execution</li>
+<li>Make the system configurable through governance for gas pricing and resource limits</li>
+</ul>
+<h2 id="key-features-3"><a class="header" href="#key-features-3">Key Features</a></h2>
+<h3 id="precompile-requestdata"><a class="header" href="#precompile-requestdata">Precompile: <code>requestData</code></a></h3>
+<p>A Solidity-accessible function defined at a fixed precompile address (e.g., <code>0x000...0900</code>) exposes the <code>requestData</code> function:</p>
+<pre><code class="language-solidity">function requestData(
+    uint64 chainId,
+    address contractAddress,
+    bytes calldata abiCall,
+    string calldata callbackSelector,
+    uint256 maxGasPrice,
+    uint256 gasLimit
+) external payable returns (uint256 taskId);
+</code></pre>
+<p>This call:</p>
+<ul>
+<li>Validates parameters and user balance</li>
+<li>Reserves execution fee via <code>SendCoinsFromAccountToModule</code></li>
+<li>Schedules a Chronos job for callback</li>
+<li>Constructs and stores an <code>OutgoingExternalDataTx</code> in the Hyperion module</li>
+</ul>
+<h3 id="external-call-lifecycle"><a class="header" href="#external-call-lifecycle">External Call Lifecycle</a></h3>
+<ol>
+<li><strong>Request Submitted:</strong> The smart contract calls <code>requestData</code>.</li>
+<li><strong>Cron Job Scheduled:</strong> Chronos schedules a callback to the contract.</li>
+<li><strong>Relayer Fetches:</strong> A registered Hyperion relayer fetches the external call data.</li>
+<li><strong>Validator Attestation:</strong> Validators vote on the result.</li>
+<li><strong>Threshold Reached:</strong> Upon reaching quorum, data is finalized and callback triggered.</li>
+<li><strong>Callback Execution:</strong> The smart contract’s <code>callBack(bytes data, bytes err)</code> function is invoked.</li>
+<li><strong>Reward Distribution:</strong> Orchestrators are rewarded from the initial fee.</li>
+<li><strong>Refund:</strong> Expired or invalid transactions are refunded.</li>
+</ol>
+<h3 id="governance-parameters"><a class="header" href="#governance-parameters">Governance Parameters</a></h3>
+<ul>
+<li><code>MinCallExternalDataGas</code>: Minimum required gas limit for a valid external data call</li>
+<li><code>HyperionFeePercentage</code>: Portion of fee to reward orchestrators</li>
+<li><code>MaxCallbackDelay</code>: Max block delay before automatic refund</li>
+</ul>
+<h2 id="technical-implementation-3"><a class="header" href="#technical-implementation-3">Technical Implementation</a></h2>
+<ul>
+<li><strong>New Module Code:</strong> <code>external_data.go</code> manages transaction creation, storage, refund, reward, and deletion.</li>
+<li><strong>EndBlock Hook:</strong> <code>executeAllExternalDataTxs()</code> is called to check for quorum and execute validated calls.</li>
+<li><strong>Relayer Integration:</strong> Added logic in Hyperion Program to fetch results and submit claims.</li>
+<li><strong>Chronos Integration:</strong> Callback logic with storage of result and error in <code>CronCallBackData</code>.</li>
+<li><strong>Contract Verification:</strong> Ensures ABI callback exists before transaction is accepted.</li>
+</ul>
+<h2 id="acceptance-criteria-3"><a class="header" href="#acceptance-criteria-3">Acceptance Criteria</a></h2>
+<ul>
+<li>Smart contracts can successfully initiate and receive data from external blockchains via the precompile.</li>
+<li>A quorum of validators finalizes the call after attesting to the result.</li>
+<li>The requested callback is executed in Chronos only after validation.</li>
+<li>Callback errors and results are correctly routed and stored.</li>
+<li>Relayers are able to fetch and submit data in a timely and secure manner.</li>
+<li>The system auto-refunds expired or invalid calls.</li>
+</ul>
+<h2 id="example"><a class="header" href="#example">Example</a></h2>
+<p>A smart contract requests ETH/USD price data from Ethereum and updates its state:</p>
+<pre><code class="language-solidity">function fetchETHPrice() external {
+    address source = 0x...;
+    bytes memory encodedData = abi.encodeWithSignature("last_price(uint256)", 0);
+    string memory callback = "callBack";
+    uint256 maxGasPrice = 10 gwei;
+    uint256 gasLimit = 20_000_000 wei;
+
+    uint256 taskId = HyperionRequestor.requestData(
+        11155111, // Ethereum Sepolia
+        source,
+        encodedData,
+        callback,
+        maxGasPrice,
+        gasLimit
+    );
+}
+
+function callBack(bytes memory data, bytes memory err) public {
+    require(err.length == 0);
+    uint256 price = abi.decode(data, (uint256));
+    updatePrice(price);
+}
+</code></pre>
+<h2 id="documentation-2"><a class="header" href="#documentation-2">Documentation</a></h2>
+<p>Full documentation will be published under <code>docs/</code> and include:</p>
+<ul>
+<li>Precompile interface and ABI specs</li>
+<li>Supported chain configurations</li>
+<li>Chronos and Hyperion params</li>
+<li>Relayer setup guide</li>
+<li>Security model for quorum-based validation</li>
+<li>Fee calculations and governance toggles</li>
+</ul>
+<h2 id="governance-proposal"><a class="header" href="#governance-proposal">Governance Proposal</a></h2>
+<p>Title: Enable External Data Call Infrastructure
+Summary: Enable support for cross-chain external data calls with Hyperion module, relayer, and callback support.
+Initial Parameters:</p>
+<ul>
+<li><code>MinCallExternalDataGas</code>: 2,000,000</li>
+<li><code>HyperionFeePercentage</code>: 50%</li>
+<li><code>MaxCallbackDelay</code>: 100 blocks</li>
+</ul>
+<h2 id="status"><a class="header" href="#status">Status</a></h2>
+<ul>
+<li>Draft</li>
+</ul>
+<h2 id="authors"><a class="header" href="#authors">Authors</a></h2>
+<ul>
+<li>Helios Core Dev Team</li>
+</ul>
+<hr />
+<p>HIP-4 lays the foundation for oracle operations and programmable cross-chain logic. By establishing a reliable, auditable, and contract-accessible interface for external data calls, Helios expands the scope of smart contracts to include real-world and interchain data in a decentralized manner.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="welcome-to-the-helios-network-hip-book-2"><a class="header" href="#welcome-to-the-helios-network-hip-book-2">Welcome to the Helios Network HIP Book</a></h1>
 <h2 id="approved-2"><a class="header" href="#approved-2">Approved</a></h2>
 <h3 id="hips-2"><a class="header" href="#hips-2">HIPs</a></h3>
 <ul>
 <li><a href="Approved/main/HIP/hip-1/">HIP-1: Native On-chain Cron Scheduling (Chronos Module &amp; Precompile)</a></li>
 <li><a href="Approved/main/HIP/hip-2/">HIP-2: Delegation Boost for Enhanced Staking</a></li>
+<li><a href="Approved/main/HIP/hip-3/">HIP-3: Smart Contract Creator Incentives</a></li>
+<li><a href="Approved/main/HIP/hip-4/">HIP-4: External Data Call Support via Hyperions</a></li>
 </ul>
 <h3 id="hds-2"><a class="header" href="#hds-2">HDs</a></h3>
 <ul>
 <li><a href="Approved/main/HD/hd-1/">HD-1: Chronos Module &amp; Precompile</a></li>
 <li><a href="Approved/main/HD/hd-2/">HD-2: Delegation Boost for Enhanced Staking</a></li>
+<li><a href="Approved/main/HD/hd-3/">HD-3</a></li>
+<li><a href="Approved/main/HD/hd-4/">HD-4: External Data Call Support via Hyperions</a></li>
 </ul>
 <h2 id="review-2"><a class="header" href="#review-2">Review</a></h2>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="hd-1-chronos-module--precompile"><a class="header" href="#hd-1-chronos-module--precompile">HD-1: Chronos Module &amp; Precompile</a></h1>
-<h2 id="feature-overview-1"><a class="header" href="#feature-overview-1">Feature Overview</a></h2>
+<h2 id="feature-overview-3"><a class="header" href="#feature-overview-3">Feature Overview</a></h2>
 <p>Implement a native cron scheduling module (<strong>Chronos</strong>) along with a dedicated EVM precompile, enabling developers to schedule and automate periodic tasks directly on-chain.</p>
-<h2 id="motivation-2"><a class="header" href="#motivation-2">Motivation</a></h2>
+<h2 id="motivation-4"><a class="header" href="#motivation-4">Motivation</a></h2>
 <p>Blockchain-based applications often require periodic execution of smart contract methods. Currently, developers depend on off-chain solutions, introducing complexity and reliability concerns. A native, blockchain-integrated cron service simplifies automation and enhances the robustness and efficiency of decentralized applications.</p>
-<h2 id="objectives-1"><a class="header" href="#objectives-1">Objectives</a></h2>
+<h2 id="objectives-3"><a class="header" href="#objectives-3">Objectives</a></h2>
 <ul>
 <li>Provide an intuitive, efficient, and secure way to schedule periodic smart contract interactions.</li>
 <li>Reduce the reliance on external cron services or centralized schedulers.</li>
 <li>Enhance developer experience through seamless integration with smart contracts.</li>
 </ul>
-<h2 id="key-features-2"><a class="header" href="#key-features-2">Key Features</a></h2>
+<h2 id="key-features-4"><a class="header" href="#key-features-4">Key Features</a></h2>
 <ul>
 <li><strong>Native Integration:</strong> Directly integrated into Helios blockchain as a precompile.</li>
 <li><strong>Easy Scheduling:</strong> Simple API to schedule function calls with specified frequency, expiration, gas limits, and maximum gas price.</li>
@@ -415,13 +638,13 @@ Community feedback and peer reviews adequately addressed.</li>
 <li><strong>RPC Endpoints:</strong> Multiple RPC endpoints must be created to support cron interactions and management.</li>
 <li><strong>Cron Cancellation Conditions:</strong> Crons are automatically canceled when their balance reaches zero or an execution failure occurs. Remaining funds (if any) at cancellation are returned to the owner, and an event is emitted indicating cancellation.</li>
 </ul>
-<h2 id="technical-implementation-2"><a class="header" href="#technical-implementation-2">Technical Implementation</a></h2>
+<h2 id="technical-implementation-4"><a class="header" href="#technical-implementation-4">Technical Implementation</a></h2>
 <ul>
 <li>Dedicated EVM-compatible precompile address: <code>0x0000000000000000000000000000000000000830</code>.</li>
 <li>ABI included for straightforward integration with front-end libraries such as Ethers.js and Web3.</li>
 <li>Comprehensive unit and integration testing included.</li>
 </ul>
-<h2 id="acceptance-criteria-2"><a class="header" href="#acceptance-criteria-2">Acceptance Criteria</a></h2>
+<h2 id="acceptance-criteria-4"><a class="header" href="#acceptance-criteria-4">Acceptance Criteria</a></h2>
 <ul>
 <li><input disabled="" type="checkbox" checked=""/>
 Ability to schedule and reliably execute cron tasks.</li>
@@ -440,23 +663,23 @@ Respect of gas limits and consumption rules as defined.</li>
 <li><input disabled="" type="checkbox" checked=""/>
 Clear and complete developer documentation.</li>
 </ul>
-<h2 id="documentation-1"><a class="header" href="#documentation-1">Documentation</a></h2>
+<h2 id="documentation-3"><a class="header" href="#documentation-3">Documentation</a></h2>
 <ul>
 <li>Detailed developer documentation available under <a href="https://hub.helioschain.network/docs/innovate/advanced-use-cases/">Chronos</a>.</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="hd-2-delegation-boost-for-enhanced-staking"><a class="header" href="#hd-2-delegation-boost-for-enhanced-staking">HD-2: Delegation Boost for Enhanced Staking</a></h1>
-<h2 id="feature-overview-2"><a class="header" href="#feature-overview-2">Feature Overview</a></h2>
+<h2 id="feature-overview-4"><a class="header" href="#feature-overview-4">Feature Overview</a></h2>
 <p>A new <strong>Delegation Boost</strong> mechanism has been introduced in the staking module, allowing delegators to deposit additional tokens (in a specialized “boosted” pool) that increase their rewards proportionally. This addition brings several novel concepts, parameters, and message types to the Cosmos-based network.</p>
-<h2 id="motivation-3"><a class="header" href="#motivation-3">Motivation</a></h2>
+<h2 id="motivation-5"><a class="header" href="#motivation-5">Motivation</a></h2>
 <p>Standard delegation involves delegators bonding tokens directly to validators, but previously had no way to “boost” or multiply their stake without simply adding more tokens in the same manner. <strong>Delegation Boost</strong> introduces a secondary stake pool that augments the staking power of a validator and potentially increases the delegator’s reward payout. This fosters deeper collaboration between delegators and validators and opens up new economic incentives in the network.</p>
-<h2 id="objectives-2"><a class="header" href="#objectives-2">Objectives</a></h2>
+<h2 id="objectives-4"><a class="header" href="#objectives-4">Objectives</a></h2>
 <ul>
 <li><strong>Provide Flexible Staking Options:</strong> Enable a dedicated method to “boost” stake in addition to normal delegation, with potential for higher rewards.</li>
 <li><strong>Enforce Minimum Boost Requirements:</strong> Allow validators to specify a <code>min_delegation</code> as a threshold for boosted delegation.</li>
 <li><strong>Enable Enhanced Reward Calculations:</strong> Incorporate boosted delegations into reward distribution using a flexible multiplier defined by a network parameter (<code>BoostPercentage</code>).</li>
 <li><strong>Streamline Staking Flows:</strong> Maintain a clear distinction between regular staked tokens and boosted tokens, with dedicated messages for deposit and withdrawal.</li>
 </ul>
-<h2 id="key-features-3"><a class="header" href="#key-features-3">Key Features</a></h2>
+<h2 id="key-features-5"><a class="header" href="#key-features-5">Key Features</a></h2>
 <ol>
 <li>
 <p><strong>Boosted Pool Account</strong></p>
@@ -501,7 +724,7 @@ Clear and complete developer documentation.</li>
 </ul>
 </li>
 </ol>
-<h2 id="technical-implementation-3"><a class="header" href="#technical-implementation-3">Technical Implementation</a></h2>
+<h2 id="technical-implementation-5"><a class="header" href="#technical-implementation-5">Technical Implementation</a></h2>
 <ul>
 <li>
 <p><strong>Extended Staking Keeper Methods:</strong></p>
@@ -531,7 +754,7 @@ Clear and complete developer documentation.</li>
 </ul>
 </li>
 </ul>
-<h2 id="acceptance-criteria-3"><a class="header" href="#acceptance-criteria-3">Acceptance Criteria</a></h2>
+<h2 id="acceptance-criteria-5"><a class="header" href="#acceptance-criteria-5">Acceptance Criteria</a></h2>
 <ul>
 <li><input disabled="" type="checkbox" checked=""/>
 <strong>Boosted Delegations:</strong> Delegators can deposit additional tokens and have them reflected in higher potential rewards.</li>
@@ -546,7 +769,7 @@ Clear and complete developer documentation.</li>
 <li><input disabled="" type="checkbox"/>
 <strong>Documentation &amp; User Guide:</strong> Provide detailed instructions for validators and delegators on enabling, delegating, and withdrawing boosts.</li>
 </ul>
-<h2 id="documentation-2"><a class="header" href="#documentation-2">Documentation</a></h2>
+<h2 id="documentation-4"><a class="header" href="#documentation-4">Documentation</a></h2>
 <ul>
 <li><strong>Developer References:</strong> Covers all new messages (<code>DelegateBoost</code>, <code>UnDelegateBoost</code>), relevant keeper methods, and store keys.</li>
 <li><strong>Validator Setup:</strong> Explains configuring <code>min_delegation</code> and <code>delegate_authorization</code>.</li>
@@ -554,17 +777,245 @@ Clear and complete developer documentation.</li>
 <li><strong>Governance:</strong> Outlines how parameters like <code>BoostPercentage</code> may be updated through governance proposals.</li>
 </ul>
 <p>By integrating <strong>Delegation Boost</strong>, Helios enhances the overall staking experience, introducing novel opportunities for delegators and validators alike to optimize their on-chain economic strategies while maintaining network security and stability.</p>
+<div style="break-before: page; page-break-before: always;"></div><p><strong>HD-3: Smart Contract Creator Incentives</strong></p>
+<hr />
+<h3 id="feature-overview-5"><a class="header" href="#feature-overview-5"><strong>Feature Overview</strong></a></h3>
+<p>Introduce a configurable fee-sharing mechanism that allocates a portion of transaction fees to smart contract creators whose contracts are actively used during block execution. By default, creators receive <strong>10% of transaction fees</strong>, but this percentage can be adjusted via governance. The system can also be toggled on or off through governance without affecting the underlying metadata about contract usage.</p>
+<hr />
+<h3 id="motivation-6"><a class="header" href="#motivation-6"><strong>Motivation</strong></a></h3>
+<p>Smart contract developers are at the heart of innovation in decentralized ecosystems. Despite this, current gas fee structures (such as EIP-1559) offer no direct compensation to creators for the usage of their contracts. This discourages long-term protocol development and innovation.</p>
+<p>The proposed incentive model creates a built-in, protocol-level mechanism to reward creators based on actual usage of their deployed contracts, fostering developer engagement, ecosystem health, and network utility.</p>
+<hr />
+<h3 id="objectives-5"><a class="header" href="#objectives-5"><strong>Objectives</strong></a></h3>
+<ul>
+<li>Provide a native, transparent way to reward smart contract creators for active on-chain usage.</li>
+<li>Align developer incentives with protocol growth.</li>
+<li>Reduce reliance on external funding, grants, or off-chain monetization.</li>
+<li>Allow governance to manage:
+<ul>
+<li>The incentive percentage.</li>
+<li>The enable/disable state of the distribution logic.</li>
+</ul>
+</li>
+<li>Ensure toggling the feature off preserves all historical creator and usage data for potential re-enablement.</li>
+</ul>
+<hr />
+<h3 id="key-features-6"><a class="header" href="#key-features-6"><strong>Key Features</strong></a></h3>
+<ul>
+<li><strong>Usage-Based Rewards:</strong> Smart contracts involved in transaction execution result in a reward share to their original deployers.</li>
+<li><strong>Governance-Controlled Percentage:</strong> Default set to 10%, modifiable by governance through parameter updates.</li>
+<li><strong>Governance Toggle:</strong> Feature can be enabled or disabled at the protocol level without deleting creator records.</li>
+<li><strong>Non-Destructive Disablement:</strong> Turning off the incentive mechanism stops revenue distribution but retains all contract metadata.</li>
+</ul>
+<hr />
+<h3 id="technical-implementation-6"><a class="header" href="#technical-implementation-6"><strong>Technical Implementation</strong></a></h3>
+<ul>
+<li>Identification of smart contracts executed per transaction (via internal EVM call tracing).</li>
+<li>Attribution of executed contracts to their original <code>msg.sender</code> at deployment (<code>CREATE</code>, <code>CREATE2</code>).</li>
+<li>Post-processing logic to redirect a configurable portion of transaction fees to the creator address.</li>
+<li>Parameter module integration for:
+<ul>
+<li><code>enable_revenue</code> (bool)</li>
+<li><code>developer_shares</code> (in decimal basis points, e.g. 0.100000000000 for 10%)</li>
+</ul>
+</li>
+<li>Logic hook  integrated at the fee accounting level (post-EVM execution, pre-burn).</li>
+<li>Contracts with unknown or nonstandard deployment origins are excluded from attribution.</li>
+</ul>
+<hr />
+<h3 id="acceptance-criteria-6"><a class="header" href="#acceptance-criteria-6"><strong>Acceptance Criteria</strong></a></h3>
+<ul>
+<li>
+<p><input disabled="" type="checkbox" checked=""/>
+Contract creators receive 10% of fees by default for executed contracts.</p>
+</li>
+<li>
+<p><input disabled="" type="checkbox" checked=""/>
+Percentage is adjustable via governance.</p>
+</li>
+<li>
+<p><input disabled="" type="checkbox" checked=""/>
+Incentive feature can be toggled on/off via governance.</p>
+</li>
+<li>
+<p><input disabled="" type="checkbox" checked=""/>
+Creator attribution works reliably for standard contract deployments.</p>
+</li>
+<li>
+<p><input disabled="" type="checkbox" checked=""/>
+Non-destructive toggling preserves creator metadata.</p>
+</li>
+<li>
+<p><input disabled="" type="checkbox" checked=""/>
+No impact on contracts not used during transaction execution.</p>
+</li>
+<li>
+<p><input disabled="" type="checkbox" checked=""/>
+Events emitted when incentive payments are made (<code>types.EventTypeDistributeDevRevenue</code> ).</p>
+</li>
+<li>
+<p><input disabled="" type="checkbox" checked=""/>
+Unit tests covering key flows: execution tracking, attribution, payout, governance updates.</p>
+</li>
+<li>
+<p><input disabled="" type="checkbox" checked=""/>
+Integration tests simulating real-world transactions and fee splitting.</p>
+</li>
+<li>
+<p><input disabled="" type="checkbox" checked=""/>
+Complete developer documentation on deployment patterns, fee accounting, and governance control.</p>
+</li>
+</ul>
+<hr />
+<h3 id="documentation-5"><a class="header" href="#documentation-5"><strong>Documentation</strong></a></h3>
+<ul>
+<li>
+<p>Full developer documentation to be published under</p>
+<p><a href="https://hub.helioschain.network/docs/innovate/advanced-use-cases/">Smart Contract Creator Incentives</a></p>
+<p>with examples, API behavior, governance guide, and integration best practices.</p>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hd-4-external-data-call-support-via-hyperions"><a class="header" href="#hd-4-external-data-call-support-via-hyperions">HD-4: External Data Call Support via Hyperions</a></h1>
+<h2 id="feature-overview-6"><a class="header" href="#feature-overview-6">Feature Overview</a></h2>
+<p>This HIP introduces the capability for smart contracts on the Helios blockchain to initiate and receive data from external blockchains, such as Ethereum, using the Hyperion module and relayer infrastructure. The new system enables secure, verifiable, and programmable cross-chain calls with callback support, forming the foundation for decentralized oracle operations and cross-chain composability.</p>
+<h2 id="motivation-7"><a class="header" href="#motivation-7">Motivation</a></h2>
+<p>Helios aims to position itself as a highly interoperable blockchain platform. Enabling smart contracts to fetch and verify data from other blockchains significantly expands their utility and paves the way for cross-chain DeFi, external oracle integrations, and decentralized automation.</p>
+<p>This proposal introduces a full lifecycle of external data requests, including:</p>
+<ul>
+<li>A precompile interface callable from smart contracts</li>
+<li>Transaction creation and management through the Hyperion module</li>
+<li>Execution, validation, and attestation through orchestrators</li>
+<li>Callback and refund mechanisms</li>
+</ul>
+<h2 id="objectives-6"><a class="header" href="#objectives-6">Objectives</a></h2>
+<ul>
+<li>Allow smart contracts to request external blockchain calls with callback execution</li>
+<li>Provide secure and auditable data fetching infrastructure with validator attestation</li>
+<li>Support gas fees and refunds to incentivize fair relay and execution</li>
+<li>Make the system configurable through governance for gas pricing and resource limits</li>
+</ul>
+<h2 id="key-features-7"><a class="header" href="#key-features-7">Key Features</a></h2>
+<h3 id="precompile-requestdata-1"><a class="header" href="#precompile-requestdata-1">Precompile: <code>requestData</code></a></h3>
+<p>A Solidity-accessible function defined at a fixed precompile address (e.g., <code>0x000...0900</code>) exposes the <code>requestData</code> function:</p>
+<pre><code class="language-solidity">function requestData(
+    uint64 chainId,
+    address contractAddress,
+    bytes calldata abiCall,
+    string calldata callbackSelector,
+    uint256 maxGasPrice,
+    uint256 gasLimit
+) external payable returns (uint256 taskId);
+</code></pre>
+<p>This call:</p>
+<ul>
+<li>Validates parameters and user balance</li>
+<li>Reserves execution fee via <code>SendCoinsFromAccountToModule</code></li>
+<li>Schedules a Chronos job for callback</li>
+<li>Constructs and stores an <code>OutgoingExternalDataTx</code> in the Hyperion module</li>
+</ul>
+<h3 id="external-call-lifecycle-1"><a class="header" href="#external-call-lifecycle-1">External Call Lifecycle</a></h3>
+<ol>
+<li><strong>Request Submitted:</strong> The smart contract calls <code>requestData</code>.</li>
+<li><strong>Cron Job Scheduled:</strong> Chronos schedules a callback to the contract.</li>
+<li><strong>Relayer Fetches:</strong> A registered Hyperion relayer fetches the external call data.</li>
+<li><strong>Validator Attestation:</strong> Validators vote on the result.</li>
+<li><strong>Threshold Reached:</strong> Upon reaching quorum, data is finalized and callback triggered.</li>
+<li><strong>Callback Execution:</strong> The smart contract’s <code>callBack(bytes data, bytes err)</code> function is invoked.</li>
+<li><strong>Reward Distribution:</strong> Orchestrators are rewarded from the initial fee.</li>
+<li><strong>Refund:</strong> Expired or invalid transactions are refunded.</li>
+</ol>
+<h3 id="governance-parameters-1"><a class="header" href="#governance-parameters-1">Governance Parameters</a></h3>
+<ul>
+<li><code>MinCallExternalDataGas</code>: Minimum required gas limit for a valid external data call</li>
+<li><code>HyperionFeePercentage</code>: Portion of fee to reward orchestrators</li>
+<li><code>MaxCallbackDelay</code>: Max block delay before automatic refund</li>
+</ul>
+<h2 id="technical-implementation-7"><a class="header" href="#technical-implementation-7">Technical Implementation</a></h2>
+<ul>
+<li><strong>New Module Code:</strong> <code>external_data.go</code> manages transaction creation, storage, refund, reward, and deletion.</li>
+<li><strong>EndBlock Hook:</strong> <code>executeAllExternalDataTxs()</code> is called to check for quorum and execute validated calls.</li>
+<li><strong>Relayer Integration:</strong> Added logic in Hyperion Program to fetch results and submit claims.</li>
+<li><strong>Chronos Integration:</strong> Callback logic with storage of result and error in <code>CronCallBackData</code>.</li>
+<li><strong>Contract Verification:</strong> Ensures ABI callback exists before transaction is accepted.</li>
+</ul>
+<h2 id="acceptance-criteria-7"><a class="header" href="#acceptance-criteria-7">Acceptance Criteria</a></h2>
+<ul>
+<li>Smart contracts can successfully initiate and receive data from external blockchains via the precompile.</li>
+<li>A quorum of validators finalizes the call after attesting to the result.</li>
+<li>The requested callback is executed in Chronos only after validation.</li>
+<li>Callback errors and results are correctly routed and stored.</li>
+<li>Relayers are able to fetch and submit data in a timely and secure manner.</li>
+<li>The system auto-refunds expired or invalid calls.</li>
+</ul>
+<h2 id="example-1"><a class="header" href="#example-1">Example</a></h2>
+<p>A smart contract requests ETH/USD price data from Ethereum and updates its state:</p>
+<pre><code class="language-solidity">function fetchETHPrice() external {
+    address source = 0x...;
+    bytes memory encodedData = abi.encodeWithSignature("last_price(uint256)", 0);
+    string memory callback = "callBack";
+    uint256 maxGasPrice = 10 gwei;
+    uint256 gasLimit = 20_000_000 wei;
+
+    uint256 taskId = HyperionRequestor.requestData(
+        11155111, // Ethereum Sepolia
+        source,
+        encodedData,
+        callback,
+        maxGasPrice,
+        gasLimit
+    );
+}
+
+function callBack(bytes memory data, bytes memory err) public {
+    require(err.length == 0);
+    uint256 price = abi.decode(data, (uint256));
+    updatePrice(price);
+}
+</code></pre>
+<h2 id="documentation-6"><a class="header" href="#documentation-6">Documentation</a></h2>
+<p>Full documentation will be published under <code>docs/</code> and include:</p>
+<ul>
+<li>Precompile interface and ABI specs</li>
+<li>Supported chain configurations</li>
+<li>Chronos and Hyperion params</li>
+<li>Relayer setup guide</li>
+<li>Security model for quorum-based validation</li>
+<li>Fee calculations and governance toggles</li>
+</ul>
+<h2 id="governance-proposal-1"><a class="header" href="#governance-proposal-1">Governance Proposal</a></h2>
+<p>Title: Enable External Data Call Infrastructure
+Summary: Enable support for cross-chain external data calls with Hyperion module, relayer, and callback support.
+Initial Parameters:</p>
+<ul>
+<li><code>MinCallExternalDataGas</code>: 2,000,000</li>
+<li><code>HyperionFeePercentage</code>: 50%</li>
+<li><code>MaxCallbackDelay</code>: 100 blocks</li>
+</ul>
+<h2 id="status-1"><a class="header" href="#status-1">Status</a></h2>
+<ul>
+<li>Draft</li>
+</ul>
+<h2 id="authors-1"><a class="header" href="#authors-1">Authors</a></h2>
+<ul>
+<li>Helios Core Dev Team</li>
+</ul>
+<hr />
+<p>HIP-4 lays the foundation for oracle operations and programmable cross-chain logic. By establishing a reliable, auditable, and contract-accessible interface for external data calls, Helios expands the scope of smart contracts to include real-world and interchain data in a decentralized manner.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="welcome-to-the-helios-network-hip-book-3"><a class="header" href="#welcome-to-the-helios-network-hip-book-3">Welcome to the Helios Network HIP Book</a></h1>
 <h2 id="approved-3"><a class="header" href="#approved-3">Approved</a></h2>
 <h3 id="hips-3"><a class="header" href="#hips-3">HIPs</a></h3>
 <ul>
 <li><a href="Approved/main/HIP/hip-1/">HIP-1: Native On-chain Cron Scheduling (Chronos Module &amp; Precompile)</a></li>
 <li><a href="Approved/main/HIP/hip-2/">HIP-2: Delegation Boost for Enhanced Staking</a></li>
+<li><a href="Approved/main/HIP/hip-3/">HIP-3: Smart Contract Creator Incentives</a></li>
+<li><a href="Approved/main/HIP/hip-4/">HIP-4: External Data Call Support via Hyperions</a></li>
 </ul>
 <h3 id="hds-3"><a class="header" href="#hds-3">HDs</a></h3>
 <ul>
 <li><a href="Approved/main/HD/hd-1/">HD-1: Chronos Module &amp; Precompile</a></li>
 <li><a href="Approved/main/HD/hd-2/">HD-2: Delegation Boost for Enhanced Staking</a></li>
+<li><a href="Approved/main/HD/hd-3/">HD-3</a></li>
+<li><a href="Approved/main/HD/hd-4/">HD-4: External Data Call Support via Hyperions</a></li>
 </ul>
 <h2 id="review-3"><a class="header" href="#review-3">Review</a></h2>
 
