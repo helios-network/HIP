@@ -1,4 +1,4 @@
-**HD-3: Smart Contract Creator Incentives**
+# HD-3: Smart Contract Creator Incentives**
 
 ---
 
