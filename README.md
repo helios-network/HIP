@@ -9,7 +9,7 @@ The lifecycle of a proposal should be:
 
 1. create a [new issue](https://github.com/helios-network/HIP/issues) to register the intent to write an HD/HIP and its scope.
 2. If 1. is approved (this may require some discussions), start writing an HD and create a PR for it using [this Draft](../../md-template.md).
-3. The author MAY start an HIP using [this Draft](../../mip-template.md) in the same PR as the HD. However, doing so may slow down the governance approval of the HD. A preferred approach is to start with the HD, then await governance approval and only then start the HIP in a separate PR.
+3. The author MAY start an HIP using [this Draft](../../hip-template.md) in the same PR as the HD. However, doing so may slow down the governance approval of the HD. A preferred approach is to start with the HD, then await governance approval and only then start the HIP in a separate PR.
 
 ```mermaid
 graph LR
@@ -19,7 +19,7 @@ graph LR
 The [Glossary](https://github.com/helios-network/HIP/wiki/glossary) contains an alphabetically ordered list of terms used in this repository. 
 In addition HG serves as a platform to define glossary terms, which are used in the HIPs and HDs.
 
-> :bulb: For more information on the process in this repository, see also[HIP-0](./HIP/mip-0/README.md).
+> :bulb: For more information on the process in this repository, see also[HIP-0](./HIP/hip-0/README.md).
 
 ## Helios Desiderata (HD)
 
@@ -31,11 +31,11 @@ HDs serve to capture the **objectives** behind the **introduction** of a particu
 
 related to HIPs should be documented as an HD and stored in the HD directory.
 
-A **template with instructions** is provided at [md-template](md-template.md). See [HIP-0](./HIP/mip-0) for a definition of its functionality.
+A **template with instructions** is provided at [hd-template](hd-template.md). See [HIP-0](./HIP/hip-0) for a definition of its functionality.
 
 ## Helios Improvement Proposal (HIP)
 
-A **template with instructions** is provided at [mip-template](mip-template.md). See [HIP-0](./HIP/mip-0) for a definition of its functionality.
+A **template with instructions** is provided at [hip-template](hip-template.md). See [HIP-0](./HIP/hip-0) for a definition of its functionality.
 
 #### Deciding whether to propose
 
@@ -53,13 +53,13 @@ You **SHOULD NOT** draft an HIP, if any of the following are true:
 
 ## Glossary and Helios Gloss (HG)
 
-A template with instructions is provided at [mg-template](mg-template.md). See [HIP-15](./HIP/mip-15) for a definition of its functionality. See [HG-0](./HG/mg-0) for an example.
+A template with instructions is provided at [hg-template](hg-template.md). See [HIP-15](./HIP/hip-15) for a definition of its functionality. See [HG-0](./HG/hg-0) for an example.
 
 An alphabetically ordered list of terms is provided in the [glossary](https://github.com/helios-network/HIP/wiki/glossary).
 
 HGs serve to capture the **definitions** of terms introduced in the HIPs and HDs. The creation of a new HG requires an HIP or HG (since new terms are introduced through the HIP or HG).
 
-See [HG-0](./HG/mg-0) for an example to get started. A template is provided at [mg-template](mg-template.md).
+See [HG-0](./HG/hg-0) for an example to get started. A template is provided at [hg-template](hg-template.md).
 
 ## Files and numbering
 
@@ -151,15 +151,9 @@ These do not render correctly either in the GitHub preview or in the rendered ma
 
 ## Governance
 
-For more information on the role of the governance, see [HIP-0: Governance](./HIP/mip-0/README.md#governance).
+For more information on the role of the governance, see [HIP-0: Governance](./HIP/hip-0/README.md#governance).
 
 Currently the governance consists of [@jguyet](https://github.com/jguyet).
-
-## Editor
-
-For more information on the role of the editor, see [HIP-0: Editor](./HIP/mip-0/README.md#editor).
-
-Currently the editors are [@apenzk](https://github.com/apenzk).
 
 ## Code owners
 
